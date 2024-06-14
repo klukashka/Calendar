@@ -1,13 +1,12 @@
 from fastapi import FastAPI
 
-app = FastAPI()
+app = FastAPI(title="Calendar")
 
 # Пример пользовательских данных (для демонстрационных целей)
 fake_users = {
     1: {"username": "john_doe", "email": "john@example.com"},
     2: {"username": "jane_smith", "email": "jane@example.com"},
 }
-
 
 # Конечная точка для получения информации о пользователе по ID
 @app.get("/users/{user_id}")
