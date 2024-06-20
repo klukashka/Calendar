@@ -1,1 +1,1 @@
-First README
+This is a TODO Calendar and my first attempt in making a full-stack website.
