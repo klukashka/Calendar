@@ -12,6 +12,4 @@ templates = Jinja2Templates(directory=domain_template_directory)
 @app.get("/sign_in/", response_class=HTMLResponse)
 async def sign_in(request: Request):
     context = {"request": request}
-    return templates.TemplateResponse(
-        os.path.join(domain_template_directory, "sign_in.html"), context
-    )
+    return templates.TemplateResponse("sign_in.html", context)
