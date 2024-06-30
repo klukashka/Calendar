@@ -1,10 +1,15 @@
-<!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <title>Title</title>
+    <title>Home Page</title>
 </head>
-<body>
-
+<body bgcolor="Lightskyblue">
+<h1>Welcome</h1>
+<button onclick="redirectToPage('/sign_in')">Sign in</button>
+<button onclick="redirectToPage('/sign_up')">Sign up</button>
+<script>
+    function redirectToPage(url) {
+        window.location.href = url;
+    }
+</script>
 </body>
 </html>
