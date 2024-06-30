@@ -4,6 +4,9 @@
 </head>
 <body bgcolor="Lightskyblue">
 <br><br>
+{% if error %}
+    <p style="color: red;">Invalid username or password</p>
+{% endif %}
 <form method="post">
   <label for="username">Username:</label>
     <br>
