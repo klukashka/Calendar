@@ -1,5 +1,8 @@
+alembic
 fastapi
-uvicorn
-SQLAlchemy
-pydantic
+fastapi-users[sqlalchemy]
+psycopg2-binary
+python-dotenv
+sqlalchemy
 Jinja2
+asyncpg
