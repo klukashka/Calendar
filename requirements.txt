@@ -1,8 +1,11 @@
 alembic
 fastapi
 fastapi-users[sqlalchemy]
+fastapi-login
 psycopg2-binary
 python-dotenv
 sqlalchemy
 Jinja2
 asyncpg
+python-decouple
+uvicorn

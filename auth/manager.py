@@ -1,6 +1,6 @@
 from typing import Optional
 
-from fastapi import Depends, Request
+from fastapi import Depends, Request, Response
 from fastapi_users import BaseUserManager, IntegerIDMixin, exceptions, models, schemas
 
 from auth.database import User, get_user_db
@@ -15,12 +15,21 @@ class UserManager(IntegerIDMixin, BaseUserManager[User, int]):
     async def on_after_register(self, user: User, request: Optional[Request] = None):
         print(f"User {user.id} has registered.")
 
+    async def on_after_login(
+            self,
+            user: User,
+            request: Optional[Request] = None,
+            response: Optional[Response] = None,
+    ):
+        print(f"User {user.id} logged in.")
+
     async def create(
         self,
         user_create: schemas.UC,
         safe: bool = False,
         request: Optional[Request] = None,
     ) -> models.UP:
+
         await self.validate_password(user_create.password, user_create)
 
         existing_user = await self.user_db.get_by_email(user_create.email)
@@ -34,8 +43,6 @@ class UserManager(IntegerIDMixin, BaseUserManager[User, int]):
         )
         password = user_dict.pop("password")
         user_dict["hashed_password"] = self.password_helper.hash(password)
-        user_dict["role_id"] = 1
-
         created_user = await self.user_db.create(user_dict)
 
         await self.on_after_register(created_user, request)

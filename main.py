@@ -1,12 +1,16 @@
-from fastapi_users import FastAPIUsers
+from fastapi.responses import HTMLResponse, RedirectResponse
+from fastapi.templating import Jinja2Templates
 
-from fastapi import FastAPI, Depends
+from fastapi import FastAPI, Depends, Request
 from fastapi_users import FastAPIUsers
 
 from auth.auth import auth_backend
 from auth.database import User
 from auth.manager import get_user_manager
 from auth.schemas import UserRead, UserCreate
+
+templates = Jinja2Templates(directory="templates")
+
 
 app = FastAPI(title="Calendar")
 
@@ -15,12 +19,15 @@ fastapi_users = FastAPIUsers[User, int](
     [auth_backend],
 )
 
+current_active_user = fastapi_users.current_user(active=True)
+
+# https://github.com/fastapi-users/fastapi-users/blob/master/fastapi_users/router/auth.py
 app.include_router(
     fastapi_users.get_auth_router(auth_backend),
     prefix="/auth/jwt",
     tags=["auth"],
 )
-
+# https://github.com/fastapi-users/fastapi-users/blob/master/fastapi_users/router/register.py
 app.include_router(
     fastapi_users.get_register_router(UserRead, UserCreate),
     prefix="/auth",
@@ -31,10 +38,11 @@ current_user = fastapi_users.current_user()
 
 
 @app.get("/protected-route")
-def protected_route(user: User = Depends(current_user)):
-    return f"Hello, {user.username}"
+def protected_route(user: User = Depends(current_active_user)):
+    return f"Hello, {user.email}"
 
 
-@app.get("/unprotected-route")
-def unprotected_route():
-    return f"Hello, anonym"
+@app.get("/", response_class=HTMLResponse)
+async def read_root(request: Request):
+    context = {"request": request}
+    return templates.TemplateResponse("first_page.html", context)
