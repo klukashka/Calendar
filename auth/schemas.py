@@ -16,8 +16,8 @@ class UserRead(schemas.BaseUser[int]):
 
 
 class UserCreate(schemas.BaseUserCreate):
-    username: str
     email: str
+    username: str
     password: str
     is_active: Optional[bool] = True
     is_superuser: Optional[bool] = False

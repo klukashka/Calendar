@@ -37,9 +37,11 @@ app.include_router(
 current_user = fastapi_users.current_user()
 
 
-@app.get("/protected-route")
-def protected_route(user: User = Depends(current_active_user)):
-    return f"Hello, {user.email}"
+@app.get("/account")
+def protected_route(request: Request, user: User = Depends(current_active_user)):
+    context = {"request": request}
+    # add user info inside account page
+    return templates.TemplateResponse("account.html", context)
 
 
 @app.get("/", response_class=HTMLResponse)
