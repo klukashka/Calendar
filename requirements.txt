@@ -9,3 +9,4 @@ Jinja2
 asyncpg
 python-decouple
 uvicorn
+python-jwt
