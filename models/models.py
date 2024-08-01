@@ -21,7 +21,7 @@ note = Table(
     "note",
     metadata,
     Column("id", Integer, primary_key=True),
-    Column("user_id", Integer),
+    Column("user_id", Integer, nullable=False),
     Column("remind_time", String, nullable=False),
     Column("message", String, nullable=True),
     Column("important", Boolean, nullable=True),
