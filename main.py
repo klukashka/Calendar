@@ -47,22 +47,6 @@ async def account(user: User = Depends(current_active_user)):
     return f"Hello, {user.username}"
 
 
-# @app.post("/account/create", response_model=NoteRead)
-# async def note_create(db_session: Session, note_to_create: NoteCreate, user: User = Depends(current_active_user)):
-#     date_time_format = "%H:%M %d.%m.%Y"
-#     if datetime.strptime(note_create.remind_time, date_time_format):
-#         raise HTTPException(status_code=406, detail="Wrong date-time data format")
-#     new_note = Note(user_id=user.id,
-#                     remind_time=note_to_create.remind_time,
-#                     message=note_to_create.message,
-#                     important=note_to_create.important,
-#                     is_complited=False)
-#     db_session.add(new_note)
-#     db_session.commit()
-#     db_session.refresh(new_note)
-#     return new_note
-
-
 @app.post("/account/note_create")
 async def note_create(note_to_create: NoteCreate,
                       db_session: AsyncSession = Depends(get_async_session),
