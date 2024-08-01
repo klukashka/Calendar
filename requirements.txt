@@ -10,3 +10,4 @@ asyncpg
 python-decouple
 uvicorn
 python-jwt
+pydantic
