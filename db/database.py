@@ -16,6 +16,7 @@ Base: DeclarativeMeta = declarative_base()
 
 class User(SQLAlchemyBaseUserTable[int], Base):
     __tablename__ = "user"
+
     id = Column(Integer, primary_key=True)
     email = Column(String, nullable=False)
     username = Column(String, nullable=False)
@@ -26,14 +27,15 @@ class User(SQLAlchemyBaseUserTable[int], Base):
     is_verified: bool = Column(Boolean, default=False, nullable=False)
 
 
-# class Event(SQLAlchemyBaseUserTable[int], Base):
-#     __tablename__ = "event"
-#     id = Column(Integer, primary_key=True)
-#     user_id = Column(Integer)
-#     remind_time = Column(String, nullable=False)
-#     message = Column(String, nullable=True)
-#     important = Column(Boolean, nullable=True)
-#     is_completed = Column(Boolean, nullable=False)
+class Note(Base):
+    __tablename__ = "note"
+
+    id = Column(Integer, primary_key=True)
+    user_id = Column(Integer, nullable=False)
+    remind_time = Column(String, nullable=False)
+    message = Column(String, nullable=True)
+    important = Column(Boolean, nullable=True)
+    is_completed = Column(Boolean, nullable=False)
 
 
 engine = create_async_engine(DATABASE_URL)
