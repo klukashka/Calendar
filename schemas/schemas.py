@@ -26,16 +26,12 @@ class UserCreate(schemas.BaseUserCreate):
     is_verified: Optional[bool] = False
 
 
-class NoteRead(BaseModel):
+class NoteGet(BaseModel):
     id: int
-    user_id: int
     remind_time: str
     message: str
     important: bool
     is_completed: bool
-
-    class Config:
-        from_attributes = True
 
 
 class NoteCreate(BaseModel):
