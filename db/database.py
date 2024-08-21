@@ -3,12 +3,13 @@ from typing import AsyncGenerator
 
 from fastapi import Depends
 from fastapi_users.db import SQLAlchemyBaseUserTable, SQLAlchemyUserDatabase
-from sqlalchemy import Column, String, Boolean, Integer, TIMESTAMP, ForeignKey
+from sqlalchemy import Column, String, Boolean, Integer, TIMESTAMP
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 from sqlalchemy.ext.declarative import DeclarativeMeta, declarative_base
 from sqlalchemy.orm import sessionmaker
 
 from config import DB_HOST, DB_NAME, DB_PASS, DB_PORT, DB_USER
+
 
 DATABASE_URL = f"postgresql+asyncpg://{DB_USER}:{DB_PASS}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
 Base: DeclarativeMeta = declarative_base()
@@ -32,7 +33,7 @@ class Note(Base):
 
     id = Column(Integer, primary_key=True)
     user_id = Column(Integer, nullable=False)
-    remind_time = Column(String, nullable=False)
+    remind_time = Column(TIMESTAMP, default=datetime.utcnow())
     message = Column(String, nullable=True)
     important = Column(Boolean, nullable=True)
     is_completed = Column(Boolean, nullable=False)
