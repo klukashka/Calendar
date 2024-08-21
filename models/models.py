@@ -22,7 +22,7 @@ note = Table(
     metadata,
     Column("id", Integer, primary_key=True),
     Column("user_id", Integer, nullable=False),
-    Column("remind_time", String, nullable=False),
+    Column("remind_time", TIMESTAMP, default=datetime.utcnow),
     Column("message", String, nullable=True),
     Column("important", Boolean, nullable=True),
     Column("is_completed", Boolean, nullable=False)
