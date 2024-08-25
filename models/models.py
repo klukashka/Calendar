@@ -1,29 +1,30 @@
 from datetime import datetime
+from fastapi_users.db import SQLAlchemyBaseUserTable, SQLAlchemyUserDatabase
+from sqlalchemy import Column, String, Boolean, BigInteger, TIMESTAMP
+from db.connector import Base
 
-from sqlalchemy import MetaData, Table, Column, Integer, String, TIMESTAMP, Boolean, DateTime
 
-metadata = MetaData()
+class User(SQLAlchemyBaseUserTable[int], Base):
+    """This class describes a table of registered users"""
 
-user = Table(
-    "user",
-    metadata,
-    Column("id", Integer, primary_key=True),
-    Column("email", String, nullable=False),
-    Column("username", String, nullable=False),
-    Column("registered_at", TIMESTAMP, default=datetime.utcnow),
-    Column("hashed_password", String, nullable=False),
-    Column("is_active", Boolean, default=True, nullable=False),
-    Column("is_superuser", Boolean, default=False, nullable=False),
-    Column("is_verified", Boolean, default=False, nullable=False),
-)
+    __tablename__ = "user"
+    id = Column(BigInteger, primary_key=True)
+    email = Column(String, nullable=False)
+    username = Column(String, nullable=False)
+    registered_at = Column(TIMESTAMP, default=datetime.utcnow)
+    hashed_password: str = Column(String(length=1024), nullable=False)
+    is_active: bool = Column(Boolean, default=True, nullable=False)
+    is_superuser: bool = Column(Boolean, default=False, nullable=False)
+    is_verified: bool = Column(Boolean, default=False, nullable=False)
 
-note = Table(
-    "note",
-    metadata,
-    Column("id", Integer, primary_key=True),
-    Column("user_id", Integer, nullable=False),
-    Column("remind_time", TIMESTAMP, default=datetime.utcnow),
-    Column("message", String, nullable=True),
-    Column("important", Boolean, nullable=True),
-    Column("is_completed", Boolean, nullable=False)
-)
+
+class Note(Base):
+    """This class describes a table of notes of all time"""
+
+    __tablename__ = "note"
+    id = Column(BigInteger, primary_key=True, unique=True, autoincrement=True)
+    user_id = Column(BigInteger, nullable=False) # attaches a user
+    remind_time = Column(TIMESTAMP, default=datetime.utcnow()) # time when to send a notification
+    message = Column(String, nullable=True) # what should be written in a notification
+    important = Column(Boolean, nullable=True) # if it is an important one (still unaware of how to use this feature)
+    is_completed = Column(Boolean, nullable=False) # to mark a task completed
