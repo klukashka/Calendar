@@ -4,7 +4,7 @@ from db.connector import setup_get_pool
 from fastapi import FastAPI
 from fastapi_users import FastAPIUsers
 from auth.auth import auth_backend
-from models.models import User
+from models.User import User
 from config import TITLE, DB_URL
 from schemas.user import UserRead, UserCreate
 from core.routers import account_router
