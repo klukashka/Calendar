@@ -2,11 +2,11 @@ from fastapi import HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 from sqlalchemy.exc import IntegrityError, SQLAlchemyError
-from exceptions.repository import ModelExists
-from models.Note import Note as DBNote
-from schemas.note import NoteCreate, NoteRead
-from exceptions.repository import DBError
-from config import DATE_TIME_FORMAT
+from app.exceptions.repository import ModelExists
+from app.models.Note import Note as DBNote
+from app.schemas.note import NoteCreate, NoteRead
+from app.exceptions.repository import DBError
+from app.config import DATE_TIME_FORMAT
 from datetime import datetime as datetime
 
 

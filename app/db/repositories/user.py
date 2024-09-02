@@ -2,9 +2,9 @@ from typing import Optional
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy import select
-from models.User import User as DBUser
-from schemas.user import UserRead
-from exceptions.repository import DBError
+from app.models.User import User as DBUser
+from app.schemas.user import UserRead
+from app.exceptions.repository import DBError
 
 """There is a user repository to separate database and SQL syntax from functions themselves"""
 

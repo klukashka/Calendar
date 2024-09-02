@@ -1,6 +1,6 @@
 from fastapi_users.authentication import CookieTransport, AuthenticationBackend
 from fastapi_users.authentication import JWTStrategy
-from config import SECRET_KEY
+from app.config import SECRET_KEY
 
 cookie_transport = CookieTransport(cookie_name="TODOes", cookie_max_age=3600)
 

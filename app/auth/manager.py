@@ -2,9 +2,9 @@ from typing import AsyncGenerator, Any
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 from fastapi import Depends
 from fastapi_users import BaseUserManager, IntegerIDMixin
-from models.User import User
+from app.models.User import User
 from fastapi_users.db import SQLAlchemyUserDatabase
-from config import SECRET_KEY
+from app.config import SECRET_KEY
 
 
 class UserManager(IntegerIDMixin, BaseUserManager[User, int]):

@@ -1,5 +1,5 @@
 from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker, AsyncSession
-from db.base import Base
+from app.db.base import Base
 
 
 async def setup_get_pool(db_url: str) -> async_sessionmaker[AsyncSession]:

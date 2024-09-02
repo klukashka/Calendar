@@ -1,9 +1,9 @@
 from fastapi import APIRouter, Depends
 from fastapi_users import FastAPIUsers
-from schemas.note import NoteCreate
-from schemas.user import UserRead
-from db.repositories.user import UserRepo
-from db.repositories.note import NoteRepo, convert_db_note_to_read_note
+from app.schemas.note import NoteCreate
+from app.schemas.user import UserRead
+from app.db.repositories.user import UserRepo
+from app.db.repositories.note import NoteRepo, convert_db_note_to_read_note
 
 
 def get_account_router(users: FastAPIUsers, user_repo: UserRepo, note_repo: NoteRepo) -> APIRouter:

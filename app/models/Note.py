@@ -1,6 +1,6 @@
 from sqlalchemy import Column, String, Boolean, BigInteger, DateTime, ForeignKey
 
-from db.base import Base
+from app.db.base import Base
 
 class Note(Base):
     """This class describes a table of notes of all time"""
