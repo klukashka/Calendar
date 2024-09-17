@@ -9,5 +9,6 @@ Jinja2
 asyncpg
 python-decouple
 uvicorn
-python-jwt
+PyJWT
 pydantic
+passlib
