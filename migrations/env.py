@@ -3,9 +3,9 @@ from logging.config import fileConfig
 from sqlalchemy import pool
 from sqlalchemy.engine import Connection
 from sqlalchemy.ext.asyncio import async_engine_from_config
-from config import DB_HOST, DB_PORT, DB_PASS, DB_USER, DB_NAME
+from app.config import DB_HOST, DB_PORT, DB_PASS, DB_USER, DB_NAME
 from alembic import context
-from db.base import Base
+from app.db.base import Base
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
