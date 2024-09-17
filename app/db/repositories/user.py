@@ -27,7 +27,6 @@ def convert_db_user_to_user(db_user: DBUser) -> UserRead:
     return UserRead(
         id=int(str(db_user.id)), # why to convert it?
         email=str(db_user.email) if db_user.email else None,
-        username=str(db_user.username) if db_user.username else None,
         is_active=bool(db_user.is_active) if db_user.is_active else None,
         registered_at=db_user.registered_at if db_user.registered_at else None,
         is_superuser=bool(db_user.is_superuser) if db_user.is_superuser else None,
