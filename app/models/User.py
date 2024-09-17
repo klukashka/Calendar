@@ -10,7 +10,6 @@ class User(SQLAlchemyBaseUserTable[int], Base):
     __tablename__ = "user"
     id = Column(BigInteger, primary_key=True)
     email = Column(String, nullable=False)
-    username = Column(String, nullable=False)
     registered_at = Column(DateTime(timezone=True), default=func.now())
     hashed_password: str = Column(String(length=1024), nullable=False)
     is_active: bool = Column(Boolean, default=True, nullable=False)
