@@ -2,7 +2,8 @@ from fastapi_users.authentication import CookieTransport, AuthenticationBackend
 from fastapi_users.authentication import JWTStrategy
 from app.config import SECRET_KEY
 
-cookie_transport = CookieTransport(cookie_name="TODOes", cookie_max_age=3600)
+
+cookie_transport = CookieTransport(cookie_name="TODOes", cookie_max_age=86400) # per day
 
 
 def get_jwt_strategy() -> JWTStrategy:
