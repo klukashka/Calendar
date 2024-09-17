@@ -1,17 +1,16 @@
 import asyncio
 import uvicorn
-from db.connector import setup_get_pool
+from fastapi.middleware.cors import CORSMiddleware
+
+from app.schemas.user import UserRead, UserCreate
+from app.db.connector import setup_get_pool
 from fastapi import FastAPI
 from fastapi_users import FastAPIUsers
-from auth.auth import auth_backend
-from models.User import User
-from config import TITLE, DB_URL
-from schemas.user import UserRead, UserCreate
-from core.routers import account_router
-from db.repositories.note import NoteRepo
-from db.repositories.user import UserRepo
-
-from auth.manager import providing_user_manager
+from app.models.User import User
+from app.config import TITLE, DB_URL, BACK_HOST, BACK_PORT, FRONT_HOST, FRONT_PORT
+from app.core.routers import account_router
+from app.auth.auth import auth_backend
+from app.auth.manager import providing_user_manager
 
 
 async def main() -> None:
@@ -20,9 +19,17 @@ async def main() -> None:
 
     session_pool = await setup_get_pool(DB_URL)
 
-    async with session_pool() as _session:
-        user_repo = UserRepo(session=_session)
-        note_repo = NoteRepo(session=_session)
+    origins = [
+        f"http://{FRONT_HOST}:{FRONT_PORT}",
+    ]
+
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=origins,
+        allow_credentials=True,
+        allow_methods=["*"],
+        allow_headers=["*"],
+    )
 
     _users = FastAPIUsers[User, int](
         await providing_user_manager(session_pool),
@@ -42,12 +49,11 @@ async def main() -> None:
     )
 
     app.include_router(
-        account_router.get_account_router(_users, user_repo, note_repo),
-        prefix="/account",
+        account_router.get_account_router(_users, session_pool),
         tags=["account"]
     )
 
-    config = uvicorn.Config(app, log_level="info", reload=True)
+    config = uvicorn.Config(app, log_level="info", host=BACK_HOST, port=int(BACK_PORT), reload=True)
     server = uvicorn.Server(config)
     await server.serve()
 
@@ -56,3 +62,9 @@ if __name__ == "__main__":
         asyncio.run(main())
     except (KeyboardInterrupt, SystemExit):
         pass
+
+# attach a scheduler
+# add config file to use variables for ports
+
+# make register page send fetch
+# send user data to /account
