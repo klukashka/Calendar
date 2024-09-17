@@ -6,7 +6,7 @@ from app.schemas.user import UserRead
 from app.db.repositories.note import NoteRepo, convert_db_note_to_read_note
 
 
-def get_account_router(users: FastAPIUsers, async_session_maker: async_sessionmaker[AsyncSession]) -> APIRouter:
+async def get_account_router(users: FastAPIUsers, async_session_maker: async_sessionmaker[AsyncSession]) -> APIRouter:
     """Generate a router with an account route"""
     router = APIRouter()
     async with async_session_maker() as _session:

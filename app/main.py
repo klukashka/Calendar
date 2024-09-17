@@ -49,7 +49,7 @@ async def main() -> None:
     )
 
     app.include_router(
-        account_router.get_account_router(_users, session_pool),
+        await account_router.get_account_router(_users, session_pool),
         tags=["account"]
     )
 
