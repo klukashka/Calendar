@@ -1,13 +1,10 @@
 import React, { useState } from 'react';
-// import { Redirect } from 'react-router';
 import { useNavigate } from 'react-router-dom';
-// import { AuthContext } from './AuthContext';
 
 const Login = () => {
   const navigate = useNavigate();
-  const [username, setUsername] = useState('');
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-//   const { login } = useContext(AuthContext);
 
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
@@ -16,13 +13,14 @@ const Login = () => {
     event.preventDefault();
 
     const formData = new FormData();
-    formData.append('username', username);
+    formData.append('username', email); // username is email in fastapi (still unaware why)
     formData.append('password', password);
 
     try {
       const response = await fetch('http://localhost:8000/auth/jwt/login', {
         method: 'POST',
-        body: formData
+        credentials: 'include',
+        body: formData,
       });
 
       if (!response.ok) {
@@ -30,8 +28,6 @@ const Login = () => {
       }
 
       console.log('Logged in successfully:', response);
-//       const data = await response.json();
-//       login(data.user, data.token);
       setSuccess('Logged in successfully!');
       navigate('/account');
 
@@ -43,12 +39,12 @@ const Login = () => {
   return (
     <form onSubmit={handleSubmit}>
       <div>
-        <label htmlFor="username">Email:</label>
+        <label htmlFor="email">Email:</label>
         <input
           type="email"
-          id="username"
-          value={username}
-          onChange={(e) => setUsername(e.target.value)}
+          id="email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
           required
         />
       </div>
