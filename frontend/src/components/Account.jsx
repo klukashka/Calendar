@@ -1,84 +1,63 @@
-// import React, { useEffect, useState } from 'react';
-// import { useHistory } from 'react-router-dom';
-//
-// const Account = () => {
-//     const [userData, setUserData] = useState(null);
-//     const [loading, setLoading] = useState(true);
-//     const history = useHistory();
-//
-//     useEffect(() => {
-//         const token = localStorage.getItem('jwt'); // Replace with your actual storage method
-//
-//         if (!token) {
-//             // No token means the user is not authenticated
-//             history.push('/auth/jwt/login'); // Redirect to login page
-//             return;
-//         }
-//
-//         // Fetch user data
-//         fetch('/', {
-//             method: 'GET',
-//             headers: {
-//                 'Authorization': `JWT ${token}`,
-//                 'Content-Type': 'application/json'
-//             },
-//         })
-//         .then(response => {
-//             if (!response.ok) {
-//                 throw new Error('Network response was not ok');
-//             }
-//             return response.json();
-//         })
-//         .then(data => {
-//             setUserData(data);
-//             setLoading(false);
-//         })
-//         .catch(error => {
-//             console.error('Error fetching user data:', error);
-//             history.push('/auth/jwt/login'); // Redirect to login if there's an error
-//         });
-//     }, [history]);
-//
-//     if (loading) {
-//         return <div>Loading...</div>; // Show a loading indicator
-//     }
-//
-//     return (
-//         <div>
-//             <h1>Your Account</h1>
-//             {userData ? (
-//                 <div>
-//                     <h2>Welcome</h2>
-//                     <p>Email: {userData.email}</p>
-//                     {/* Add more account details as needed */}
-//                 </div>
-//             ) : (
-//                 <p>No user data found.</p>
-//             )}
-//         </div>
-//     );
-// };
-//
-// export default Account;
-
-
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 const Account = () => {
-  const [message, setMessage] = useState("Hello, World!");
+    const navigate = useNavigate();
+    const [user, setUser] = useState(null);
+    const [error, setError] = useState('');
 
-  const changeMessage = () => {
-    setMessage("You clicked the button!");
-  };
+    const logout = async () => {
+        try {
+            const response = await fetch('http://localhost:8000/auth/jwt/logout', {
+                    method: 'POST',
+                    credentials: 'include',
+                });
+            if (!response.ok){
+                throw new Error('Network response was not ok');
+            }
+            console.log('Logged out successfully:', response);
+            navigate('/');
+        } catch(error){
+            console.error('There was a problem with the logout request:', error);
+        }
+    };
 
-  return (
-    <div style={{ textAlign: "center", marginTop: "50px" }}>
-      <h1>{message}</h1>
-      <button onClick={changeMessage} style={{ padding: "10px 15px", fontSize: "16px" }}>
-        Click Me
-      </button>
-    </div>
-  );
+    useEffect(() => {
+        const fetchUser = async () => {
+            const response = await fetch('http://localhost:8000/account/user_info', {
+                method: 'GET',
+                credentials: 'include',
+            });
+
+            if (response.ok) {
+                const userData = await response.json();
+                console.log('Logged in successfully:', userData);
+                setUser(userData);
+            } else {
+                setError('You need to log in to access this page.');
+            }
+        };
+
+        fetchUser();
+    }, []);
+
+    if (error) {
+        return <div style={{ color: 'red' }}>{error}</div>;
+    }
+
+    if (!user) {
+        return <div>Loading...</div>;
+    }
+
+    return (
+        <div>
+            <h2>Calendar account</h2>
+            <p>Welcome, {user.nickname}</p>
+            <button onClick={logout} style={{ padding: "10px 15px", fontSize: "16px" }}>
+                Logout
+            </button>
+        </div>
+    );
 };
 
 export default Account;
