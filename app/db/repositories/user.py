@@ -25,10 +25,11 @@ class UserRepo:
 
 def convert_db_user_to_user(db_user: DBUser) -> UserRead:
     return UserRead(
-        id=int(str(db_user.id)), # why to convert it?
+        id=int(str(db_user.id)) if db_user.id else None,
         email=str(db_user.email) if db_user.email else None,
-        is_active=bool(db_user.is_active) if db_user.is_active else None,
+        nickname=str(db_user.nickname) if db_user.nickname else None,
+        is_active=bool(db_user.is_active),
         registered_at=db_user.registered_at if db_user.registered_at else None,
-        is_superuser=bool(db_user.is_superuser) if db_user.is_superuser else None,
-        is_verified=bool(db_user.is_verified) if db_user.is_verified else None
+        is_superuser=bool(db_user.is_superuser),
+        is_verified=bool(db_user.is_verified)
        )
