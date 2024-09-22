@@ -10,6 +10,7 @@ class User(SQLAlchemyBaseUserTable[int], Base):
     __tablename__ = "user"
     id = Column(BigInteger, primary_key=True)
     email = Column(String, nullable=False)
+    nickname = Column(String, nullable=False)
     registered_at = Column(DateTime(timezone=True), default=func.now())
     hashed_password: str = Column(String(length=1024), nullable=False)
     is_active: bool = Column(Boolean, default=True, nullable=False)
@@ -17,4 +18,4 @@ class User(SQLAlchemyBaseUserTable[int], Base):
     is_verified: bool = Column(Boolean, default=False, nullable=False)
 
     def __repr__(self) -> str:
-        return f"User: {self.id} | {self.email}, {self.username}, {self.registered_at}"
+        return f"User: {self.id} | {self.email}, {self.nickname}, {self.registered_at}"

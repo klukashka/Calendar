@@ -13,7 +13,6 @@ BACK_PORT = os.environ.get("BACK_PORT")
 FRONT_HOST = os.environ.get("FRONT_HOST")
 FRONT_PORT = os.environ.get("FRONT_PORT")
 SECRET_KEY = os.environ.get("SECRET_KEY")
-ALGORITHM = os.environ.get("ALGORITHM")
 DATE_TIME_FORMAT = os.environ.get("DATE_TIME_FORMAT")
 DB_URL = f"postgresql+asyncpg://{DB_USER}:{DB_PASS}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
 TITLE = os.environ.get("TITLE")

@@ -4,7 +4,8 @@ import { useNavigate } from 'react-router-dom';
 
 const Register = () => {
   const navigate = useNavigate();
-  const [email, setUsername] = useState('');
+  const [nickname, setNickname] = useState('');
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
   const [error, setError] = useState('');
@@ -15,6 +16,7 @@ const Register = () => {
     event.preventDefault();
 
     const data_to_send = {
+        'nickname': nickname,
         'email': email,
         'password': password
         };
@@ -33,16 +35,14 @@ const Register = () => {
         });
 
       if (!response.ok) {
+        setError('Registration failed');
         throw new Error('Network response was not ok');
       }
 
       const data = response;
 
-      console.log('Registered successfully:', data);
-      setSuccess('Registration successful!');
-      setError(null);
-      setUsername('');
-      setPassword('');
+      console.log('You were successfully registered:', data);
+      setSuccess('You were successfully registered!');
       navigate('/');
     } catch (error) {
       console.error('There was a problem with the register request:', error);
@@ -52,12 +52,22 @@ const Register = () => {
   return (
     <form onSubmit={handleSubmit}>
       <div>
+        <label htmlFor="nickname">Nickname:</label>
+        <input
+          type="text"
+          id="nickname"
+          value={nickname}
+          onChange={(e) => setNickname(e.target.value)}
+          required
+        />
+      </div>
+      <div>
         <label htmlFor="email">Email:</label>
         <input
           type="email"
           id="email"
           value={email}
-          onChange={(e) => setUsername(e.target.value)}
+          onChange={(e) => setEmail(e.target.value)}
           required
         />
       </div>
