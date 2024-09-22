@@ -35,17 +35,14 @@ const Register = () => {
         });
 
       if (!response.ok) {
+        setError('Registration failed');
         throw new Error('Network response was not ok');
       }
 
       const data = response;
 
-      console.log('Registered successfully:', data);
-      setSuccess('Registration successful!');
-      setError(null);
-      setNickname('');
-      setEmail('');
-      setPassword('');
+      console.log('You were successfully registered:', data);
+      setSuccess('You were successfully registered!');
       navigate('/');
     } catch (error) {
       console.error('There was a problem with the register request:', error);
