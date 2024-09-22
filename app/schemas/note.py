@@ -1,3 +1,4 @@
+from typing import Optional
 from datetime import datetime
 from pydantic import BaseModel
 
@@ -6,7 +7,7 @@ from pydantic import BaseModel
 class NoteCreate(BaseModel):
     remind_time: str
     message: str
-    important: bool
+    important: Optional[bool] = True
 
 
 class NoteRead(BaseModel):
