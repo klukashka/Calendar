@@ -42,7 +42,7 @@ class NoteRepo:
         try:
             query = select(DBNote).where(DBNote.user_id==_user_id and DBNote.is_completed==False)
             result = await self.session.execute(query)
-            return result.mappings().all()
+            return result.scalars().all()
         except SQLAlchemyError:
             raise DBError("Failed to get the note from the database") from SQLAlchemyError
         # memory limit exceeded
