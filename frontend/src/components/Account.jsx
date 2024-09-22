@@ -1,26 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import Logout from '../hooks/Logout';
+import NoteCreate from '../hooks/NoteCreate';
+import NotesGet from '../hooks/NotesGet';
 
 const Account = () => {
-    const navigate = useNavigate();
     const [user, setUser] = useState(null);
     const [error, setError] = useState('');
-
-    const logout = async () => {
-        try {
-            const response = await fetch('http://localhost:8000/auth/jwt/logout', {
-                    method: 'POST',
-                    credentials: 'include',
-                });
-            if (!response.ok){
-                throw new Error('Network response was not ok');
-            }
-            console.log('Logged out successfully:', response);
-            navigate('/');
-        } catch(error){
-            console.error('There was a problem with the logout request:', error);
-        }
-    };
 
     useEffect(() => {
         const fetchUser = async () => {
@@ -52,10 +37,12 @@ const Account = () => {
     return (
         <div>
             <h2>Calendar account</h2>
-            <p>Welcome, {user.nickname}</p>
-            <button onClick={logout} style={{ padding: "10px 15px", fontSize: "16px" }}>
-                Logout
-            </button>
+            <p>Welcome, {user.nickname}!</p>
+            <h4>You can create a new note:</h4>
+                <NoteCreate />
+            <h4>Here are your current notes:</h4>
+            <NotesGet />
+            <Logout />
         </div>
     );
 };
