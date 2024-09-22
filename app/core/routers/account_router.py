@@ -23,8 +23,8 @@ async def get_account_router(users: FastAPIUsers, async_session_maker: async_ses
             note_to_read = convert_db_note_to_read_note(note)
             return note_to_read
 
-        @router.get("/account/note_read")
-        async def get_notes(user: UserRead = Depends(users.current_user(active=True))):
+        @router.get("/account/notes_get")
+        async def notes_get(user: UserRead = Depends(users.current_user(active=True))):
             notes = await note_repo.get_notes_by_user_id(user.id)
             return notes
 
