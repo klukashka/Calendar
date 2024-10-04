@@ -1,9 +1,9 @@
 from sqlalchemy import Column, String, Boolean, BigInteger, DateTime, ForeignKey
-
 from app.db.base import Base
 
+
 class Note(Base):
-    """This class describes a table of all the notes"""
+    """Notes info"""
 
     __tablename__ = "note"
     id = Column(BigInteger, primary_key=True, unique=True, autoincrement=True)
