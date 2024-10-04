@@ -1,16 +1,18 @@
 import asyncio
 import uvicorn
 from fastapi.middleware.cors import CORSMiddleware
-
-from app.schemas.user import UserRead, UserCreate
 from app.db.connector import setup_get_pool
 from fastapi import FastAPI
 from fastapi_users import FastAPIUsers
 from app.models.User import User
-from app.config import TITLE, DB_URL, BACK_HOST, BACK_PORT, FRONT_HOST, FRONT_PORT
-from app.core.routers import account_router
+from app.config import *
 from app.auth.auth import auth_backend
 from app.auth.manager import providing_user_manager
+from app.core.email_sender import EmailSender
+from app.core.routers_includer import include_routers
+from apscheduler.schedulers.asyncio import AsyncIOScheduler
+from apscheduler.triggers.interval import IntervalTrigger
+import tzlocal
 
 
 async def main() -> None:
@@ -31,31 +33,38 @@ async def main() -> None:
         allow_headers=["*"],
     )
 
-    _users = FastAPIUsers[User, int](
+    users = FastAPIUsers[User, int](
         await providing_user_manager(session_pool),
         [auth_backend],
     )
 
-    app.include_router(
-        _users.get_auth_router(auth_backend),
-        prefix="/auth/jwt",
-        tags=["auth"],
+    await include_routers(app, users, session_pool) # includes all the routers
+
+    email_sender = EmailSender(session_pool, ADMIN_EMAIL, ADMIN_EMAIL_PASSWORD, SMTP_PORT, SMTP_SERVER)
+    await email_sender.start()
+
+    scheduler = _init_scheduler()
+
+    scheduler.add_job(
+        email_sender.super_send,
+        IntervalTrigger(seconds=60),
     )
 
-    app.include_router(
-        _users.get_register_router(UserRead, UserCreate),
-        prefix="/auth",
-        tags=["auth"],
-    )
+    try:
+        config = uvicorn.Config(app, log_level="info", host=BACK_HOST, port=int(BACK_PORT), reload=True)
+        server = uvicorn.Server(config)
+        await server.serve()
+    finally:
+       await email_sender.close()
 
-    app.include_router(
-        await account_router.get_account_router(_users, session_pool),
-        tags=["account"]
-    )
+def _init_scheduler() -> AsyncIOScheduler:
+    """
+    Initializes and starts a scheduler.
+    """
+    scheduler = AsyncIOScheduler(timezone=str(tzlocal.get_localzone()))
+    scheduler.start()
+    return scheduler
 
-    config = uvicorn.Config(app, log_level="info", host=BACK_HOST, port=int(BACK_PORT), reload=True)
-    server = uvicorn.Server(config)
-    await server.serve()
 
 if __name__ == "__main__":
     try:
@@ -63,8 +72,19 @@ if __name__ == "__main__":
     except (KeyboardInterrupt, SystemExit):
         pass
 
-# attach a scheduler
-# add config file to use variables for ports
 
-# make register page send fetch
-# send user data to /account
+# why are some folders empty?
+# why is there an _ everywhere at the beginnings of the names
+# how to catch errors properly?
+# why are all the queries yellow in repos?
+# clear config
+# should I batch in update queries?
+# should do converting in notes
+
+# parametrize ports and hosts on frontend
+# add timezone logic everywhere (especially frontend)
+# add batching
+# convert iterable objects
+# how to typify semi-models?
+# clear up with timezones. make comparisons work properly
+# cannot understand how to select only specific fields from a table
