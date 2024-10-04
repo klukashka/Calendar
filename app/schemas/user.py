@@ -1,6 +1,7 @@
 from typing import Optional
 from fastapi_users import schemas
 
+
 class UserCreate(schemas.BaseUserCreate):
     email: str
     nickname: str
