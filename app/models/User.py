@@ -5,7 +5,7 @@ from app.db.base import Base
 
 
 class User(SQLAlchemyBaseUserTable[int], Base):
-    """This class describes a table of registered users"""
+    """Table of registered users"""
 
     __tablename__ = "user"
     id = Column(BigInteger, primary_key=True)
