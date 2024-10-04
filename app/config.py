@@ -15,4 +15,10 @@ FRONT_PORT = os.environ.get("FRONT_PORT")
 SECRET_KEY = os.environ.get("SECRET_KEY")
 DATE_TIME_FORMAT = os.environ.get("DATE_TIME_FORMAT")
 DB_URL = f"postgresql+asyncpg://{DB_USER}:{DB_PASS}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
+
+SMTP_SERVER=os.environ.get("SMTP_SERVER")
+SMTP_PORT=os.environ.get("SMTP_PORT")
+ADMIN_EMAIL=os.environ.get("ADMIN_EMAIL")
+ADMIN_EMAIL_PASSWORD=os.environ.get("ADMIN_EMAIL_PASSWORD")
+
 TITLE = os.environ.get("TITLE")
