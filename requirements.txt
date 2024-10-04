@@ -12,3 +12,6 @@ uvicorn
 PyJWT
 pydantic
 passlib
+apscheduler
+tzlocal
+aiosmtplib
