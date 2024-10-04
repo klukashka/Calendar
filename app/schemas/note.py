@@ -3,7 +3,6 @@ from datetime import datetime
 from pydantic import BaseModel
 
 
-
 class NoteCreate(BaseModel):
     remind_time: str
     message: str
