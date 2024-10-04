@@ -6,24 +6,23 @@ from app.models.User import User as DBUser
 from app.schemas.user import UserRead
 from app.exceptions.repository import DBError
 
-"""There is a user repository to separate database and SQL syntax from functions themselves"""
 
 class UserRepo:
     """Repository for database operations concerning user"""
     def __init__(self, session: AsyncSession):
-        self.session = session
+        self._session = session
 
 
     async def get_user(self, user_id: int) -> Optional[UserRead]:
         try:
-            result = await self.session.execute(select(DBUser).where(DBUser.id == user_id))
+            result = await self._session.execute(select(DBUser).where(DBUser.id == user_id))
             db_user = result.scalar_one_or_none()
-            return convert_db_user_to_user(db_user)
+            return _convert_db_user_to_user(db_user)
         except SQLAlchemyError:
             raise DBError("Failed to get the user from the database") from SQLAlchemyError
 
 
-def convert_db_user_to_user(db_user: DBUser) -> UserRead:
+def _convert_db_user_to_user(db_user: DBUser) -> UserRead:
     return UserRead(
         id=int(str(db_user.id)) if db_user.id else None,
         email=str(db_user.email) if db_user.email else None,
@@ -31,5 +30,5 @@ def convert_db_user_to_user(db_user: DBUser) -> UserRead:
         is_active=bool(db_user.is_active),
         registered_at=db_user.registered_at if db_user.registered_at else None,
         is_superuser=bool(db_user.is_superuser),
-        is_verified=bool(db_user.is_verified)
+        is_verified=bool(db_user.is_verified),
        )
