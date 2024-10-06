@@ -21,11 +21,9 @@ class EmailSender:
     async def start(self):
         """Logs in and prepares for sending emails"""
         await self._mail.connect()
-        # await self._mail.starttls()
         await self._mail.login(self._sender, self._password)
-        # should add catching errors
 
-    async def send(self, recipient: str, subject: str, content: str, nickname: str):
+    async def send(self, recipient: str, content: str, nickname: str):
         """Sends an email from one user to another"""
         message = f"Hello, {nickname}!\n" + content
         await self._mail.sendmail(self._sender, recipient, message)
@@ -40,12 +38,11 @@ class EmailSender:
         async with self._async_session_maker() as _session:
             email_repo = EmailRepo(_session)
             while True:
+                generator_is_empty = True
                 email_infos = email_repo.get_notes_to_send(offset, batch_size + offset)
-                print(type(email_infos))
-                if not email_infos:
-                    break
                 async for info in email_infos:
-                    # needs to be converted into their types (str bool etc...)
-                    print(info)
-                    await self.send(info.email, "Notification", info.message, info.nickname)
+                    generator_is_empty = False
+                    await self.send(info.email, info.message, info.nickname)
+                if generator_is_empty:
+                    break
                 offset += batch_size
