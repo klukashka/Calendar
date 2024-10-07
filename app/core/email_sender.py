@@ -1,3 +1,5 @@
+from typing import AsyncGenerator
+from sqlalchemy import Row
 import aiosmtplib
 from sqlalchemy.ext.asyncio import async_sessionmaker, AsyncSession
 from app.db.repositories.email import EmailRepo
@@ -21,9 +23,10 @@ class EmailSender:
     async def start(self):
         """Logs in and prepares for sending emails"""
         await self._mail.connect()
+        # await self._mail.starttls()
         await self._mail.login(self._sender, self._password)
 
-    async def send(self, recipient: str, content: str, nickname: str):
+    async def send_email(self, recipient: str, content: str, nickname: str):
         """Sends an email from one user to another"""
         message = f"Hello, {nickname}!\n" + content
         await self._mail.sendmail(self._sender, recipient, message)
@@ -32,17 +35,29 @@ class EmailSender:
         """Closes smtp server and quits all the processes"""
         await self._mail.quit()
 
-    # or is it better to init email_repo once
-    async def super_send(self, batch_size: int = 100):
+    async def distribute_emails(self, batch_size: int = 100):
+        """General distribution function"""
         offset = 0
         async with self._async_session_maker() as _session:
             email_repo = EmailRepo(_session)
             while True:
-                generator_is_empty = True
-                email_infos = email_repo.get_notes_to_send(offset, batch_size + offset)
-                async for info in email_infos:
-                    generator_is_empty = False
-                    await self.send(info.email, info.message, info.nickname)
-                if generator_is_empty:
+                email_infos = await fetch_emails(email_repo, offset, batch_size)
+                stop_iterating = await self.iterate_to_send(email_infos)
+                if stop_iterating:
                     break
                 offset += batch_size
+
+    async def iterate_to_send(self, email_infos: AsyncGenerator[Row[tuple[str, str, str]], None]) -> bool:
+        generator_is_empty = True
+        async for info in email_infos:
+            generator_is_empty = False
+            await self.send_email(info.email, info.message, info.nickname)
+        return generator_is_empty
+
+async def fetch_emails(
+        email_repo: EmailRepo,
+        offset: int,
+        batch_size: int
+) -> AsyncGenerator[Row[tuple[str, str, str]], None]:
+    """Fetches emails using EmailRepo"""
+    return email_repo.get_notes_to_send(offset, batch_size + offset)
