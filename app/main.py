@@ -17,7 +17,7 @@ import tzlocal
 
 async def main() -> None:
     """Main function to run app"""
-    app = FastAPI(title=TITLE)
+    app = FastAPI()
 
     session_pool = await setup_get_pool(DB_URL)
 
@@ -44,14 +44,13 @@ async def main() -> None:
     await email_sender.start()
 
     scheduler = _init_scheduler()
-
     scheduler.add_job(
-        email_sender.super_send,
+        email_sender.distribute_emails,
         IntervalTrigger(seconds=60),
     )
 
     try:
-        config = uvicorn.Config(app, log_level="info", host=BACK_HOST, port=int(BACK_PORT), reload=True)
+        config = uvicorn.Config(app, log_level="info", host=BACK_HOST, port=int(BACK_PORT))
         server = uvicorn.Server(config)
         await server.serve()
     finally:
@@ -87,4 +86,6 @@ if __name__ == "__main__":
 # convert iterable objects
 # how to typify semi-models?
 # clear up with timezones. make comparisons work properly
-# cannot understand how to select only specific fields from a table
+# should add absent type hints
+# remake super_send
+# add docker-compose
