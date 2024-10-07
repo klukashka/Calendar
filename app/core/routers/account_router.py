@@ -19,7 +19,7 @@ async def get_account_router(users: FastAPIUsers, async_session_maker: async_ses
         async def note_create(
                 note_to_create: NoteCreate,
                 user: UserRead = Depends(users.current_user(active=True))
-              ):
+        ):
             note = await note_repo.add_note(note_to_create, user.id)
             note_to_read = _convert_db_note_to_read_note(note)
             return note_to_read
