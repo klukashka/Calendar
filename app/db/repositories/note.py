@@ -36,17 +36,19 @@ class NoteRepo:
         except SQLAlchemyError:
             raise DBError("Failed to get the note from the database") from SQLAlchemyError
 
-    async def get_notes_by_user_id(self, _user_id: int):
+    async def get_notes_by_user_id(self, _user_id: int, cursor: int, batch_size: int):
         try:
-            query = select(DBNote).where(DBNote.user_id == _user_id and DBNote.is_completed==False)
+            query = (
+                select(DBNote)
+                .where((DBNote.user_id == _user_id) & DBNote.is_completed==False)
+                .limit(cursor + batch_size).offset(cursor)
+            )
             result = await self._session.execute(query)
             # should add converting
             notes = result.scalars().all()
             return notes
         except SQLAlchemyError:
             raise DBError("Failed to get the note from the database") from SQLAlchemyError
-        # memory limit exceeded
-
 
 def _convert_read_note_to_db_note(note: NoteRead) -> DBNote:
     return DBNote(id=note.id,
