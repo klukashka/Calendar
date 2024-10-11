@@ -1,6 +1,10 @@
 # A generic, single database configuration.
 
 [alembic]
+
+# WRITE HERE YOUR DATABASE URL:
+sqlalchemy.url = postgresql+asyncpg://postgres:postgres@localhost:5432/postgres
+
 # path to migration scripts
 script_location = migrations
 
@@ -54,10 +58,6 @@ version_path_separator = os  # Use os.pathsep. Default configuration used for ne
 # the output encoding used when revision files
 # are written from script.py.mako
 # output_encoding = utf-8
-
-# DSN
-sqlalchemy.url = postgresql+asyncpg://postgres:postgres@localhost:5432/postgres
-
 
 [post_write_hooks]
 # post_write_hooks defines scripts or Python functions that are run
