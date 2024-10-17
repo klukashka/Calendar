@@ -1,0 +1,44 @@
+services:
+  db:
+    image: postgres:14.13
+    environment:
+      - POSTGRES_PASSWORD=${DB_PASS}
+      - PGDATA=/var/lib/postgresql/data
+      - POSTGRES_DB=${DB_NAME}
+      - POSTGRES_USER=${DB_USER}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    container_name: db_app
+    restart: always
+    ports:
+      - "5433:5432"
+    hostname: ${DB_HOST}
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    expose:
+      - 8000
+    ports:
+      - "8000:8000"
+    environment:
+      - DB_URL=${DB_URL}
+      - BACK_HOST=${BACK_HOST}
+      - BACK_PORT=${BACK_PORT}
+      - FRONT_HOST=${FRONT_HOST}
+      - FRONT_PORT=${FRONT_PORT}
+      - SECRET_KEY=${SECRET_KEY}
+      - DATE_TIME_FORMAT=${DATE_TIME_FORMAT}
+
+      - SMTP_SERVER=${SMTP_SERVER}
+      - SMTP_PORT=${SMTP_PORT}
+      - ADMIN_EMAIL=${ADMIN_EMAIL}
+      - ADMIN_EMAIL_PASSWORD=${ADMIN_EMAIL_PASSWORD}
+    restart: always
+    depends_on:
+      - db
+volumes:
+  pgdata:
+
+# the main problem is that i cannot understand what each function actually does
