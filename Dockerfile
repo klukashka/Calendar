@@ -1,13 +1,17 @@
-FROM python:3.10
+FROM python:3.10-slim
 
-RUN mkdir /application
+WORKDIR /Calendar
+COPY app/ /Calendar/app/
+COPY ./requirements.txt /Calendar
+RUN ls -la /Calendar
 
-WORKDIR /Calendar_app
+RUN python3 --version
+RUN pip3 install --upgrade pip
+RUN pip3 install --no-cache-dir -r /Calendar/requirements.txt
+RUN pip3 list --format=columns
+#
+#USER 1001
 
-COPY requirements.txt .
+ENV PYTHONPATH=.
 
-RUN pip install -r requirements.txt
-
-COPY . .
-
-CMD ["python", "app/main.py"]
+CMD ["python", "/Calendar/app/main.py"]
