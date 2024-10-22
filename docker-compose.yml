@@ -8,18 +8,22 @@ services:
       - POSTGRES_USER=${DB_USER}
     volumes:
       - pgdata:/var/lib/postgresql/data
-    container_name: db_app
+#    container_name: db
     restart: always
     ports:
       - "5433:5432"
-    hostname: ${DB_HOST}
+#    hostname: ${DB_HOST}
+#    networks:
+#      - test
+#        ipv4_address: 172.28.2.1
 
-  app:
+  backend:
+#    container_name: backend
     build:
-      context: .
-      dockerfile: Dockerfile
-    expose:
-      - 8000
+      context: ./
+      dockerfile: ./app/Dockerfile
+#    expose:
+#      - 8000
     ports:
       - "8000:8000"
     environment:
@@ -38,7 +42,32 @@ services:
     restart: always
     depends_on:
       - db
+#    networks:
+#      - test
+#        ipv4_address: 172.28.2.2
+
+  frontend:
+#    container_name: frontend
+    build:
+      context: .
+      dockerfile: ./frontend/Dockerfile
+#    expose:
+#      - 5173
+    ports:
+      - "5173:5173"
+    environment:
+      - BACK_HOST=${BACK_HOST}
+      - BACK_PORT=${BACK_PORT}
+      - FRONT_HOST=${FRONT_HOST}
+      - FRONT_PORT=${FRONT_PORT}
+    restart: always
+    depends_on:
+      - backend
+#    networks:
+#      - test
+#        ipv4_address: 172.28.2.3
+#networks:
+#  test:
+#    driver: bridge
 volumes:
   pgdata:
-
-# the main problem is that i cannot understand what each function actually does
