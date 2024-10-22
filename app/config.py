@@ -4,6 +4,13 @@ import os
 load_dotenv()
 
 DB_URL = os.environ.get("DB_URL")
+
+DB_HOST = os.environ.get("DB_HOST")
+DB_PORT = os.environ.get("DB_PORT")
+DB_NAME = os.environ.get("DB_NAME")
+DB_USER = os.environ.get("DB_USER")
+DB_PASS = os.environ.get("DB_PASS")
+
 BACK_HOST = os.environ.get("BACK_HOST")
 BACK_PORT = os.environ.get("BACK_PORT")
 FRONT_HOST = os.environ.get("FRONT_HOST")
