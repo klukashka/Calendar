@@ -70,22 +70,3 @@ if __name__ == "__main__":
         asyncio.run(main())
     except (KeyboardInterrupt, SystemExit):
         pass
-
-
-# why are some folders empty?
-# why is there an _ everywhere at the beginnings of the names
-# how to catch errors properly?
-# why are all the queries yellow in repos?
-# clear config
-# should I batch in update queries?
-# should do converting in notes
-
-# parametrize ports and hosts on frontend
-# add timezone logic everywhere (especially frontend)
-# add batching
-# convert iterable objects
-# how to typify semi-models?
-# clear up with timezones. make comparisons work properly
-# should add absent type hints
-# remake super_send
-# add docker-compose
