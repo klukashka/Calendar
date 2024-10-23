@@ -4,6 +4,12 @@ import {back_host, back_port} from '../config.jsx';
 const NoteCreate = () => {
     const [remindTime, setRemindTime] = useState('');
     const [message, setMessage] = useState('');
+    const [important, setImportant] = useState(false);
+
+    const handleCheckboxChange = (event) => {
+        const { checked } = event.target;
+        setImportant(checked);
+    };
 
     const [error, setError] = useState('');
     const [success, setSuccess] = useState('');
@@ -14,7 +20,7 @@ const NoteCreate = () => {
         const note_to_create = {
         'remind_time': remindTime,
         'message': message,
-        'important': 'True'
+        'important': important,
         };
 
         try {
@@ -54,6 +60,16 @@ const NoteCreate = () => {
                               type="text"
                               value={message}
                               onChange={(e) => setMessage(e.target.value)}
+                            />
+                          </label>
+                      </div>
+                      <div>
+                          <label>
+                            Is it important?
+                            <input
+                              type="checkbox"
+                              checked={important}
+                              onChange={handleCheckboxChange}
                             />
                           </label>
                       </div>
