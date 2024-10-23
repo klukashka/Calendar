@@ -23,4 +23,4 @@ SMTP_PORT=os.environ.get("SMTP_PORT")
 ADMIN_EMAIL=os.environ.get("ADMIN_EMAIL")
 ADMIN_EMAIL_PASSWORD=os.environ.get("ADMIN_EMAIL_PASSWORD")
 
-TITLE = os.environ.get("TITLE")
+LOG_LEVEL=os.environ.get("LOG_LEVEL")
