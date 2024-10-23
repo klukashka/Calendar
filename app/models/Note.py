@@ -14,4 +14,7 @@ class Note(Base):
     is_completed = Column(Boolean, nullable=False, default=False) # to mark a task completed
 
     def __repr__(self) -> str:
-        return f"Note: {self.id} | {self.user_id}, {self.remind_time}, {self.important}, {self.is_completed}"
+        return (
+            f"<Note(id='{self.id}', user_id='{self.user_id}', remind_time='{self.remind_time}', \n"
+            f"important='{self.important}', is_completed='{self.is_completed}')>"
+        )

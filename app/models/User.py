@@ -18,4 +18,7 @@ class User(SQLAlchemyBaseUserTable[int], Base):
     is_verified: bool = Column(Boolean, default=False, nullable=False)
 
     def __repr__(self) -> str:
-        return f"User: {self.id} | {self.email}, {self.nickname}, {self.registered_at}"
+        return (
+            f"<User(id='{self.id}', email='{self.email}', \n"
+            f"nickname='{self.nickname}', registered_at='{self.registered_at}')>"
+        )
