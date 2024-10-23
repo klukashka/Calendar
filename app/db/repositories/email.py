@@ -1,5 +1,5 @@
-from typing import List, Sequence, AsyncGenerator
-from sqlalchemy import select, update, Row
+from typing import AsyncGenerator
+from sqlalchemy import select, update
 from app.models.Note import Note as DBNote
 from app.models.User import User as DBUser
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -14,14 +14,14 @@ class EmailRepo:
     def __init__(self, session: AsyncSession):
         self._session = session
 
-    async def get_notes_to_send(self, low: int, high: int) -> AsyncGenerator[Row[tuple[str, str, str]], None]:
+    async def get_notes_to_send(self, low: int, high: int) -> AsyncGenerator[EmailRead, None]:
         """Notes which should be sent (time to remind)"""
         try:
             current_time = datetime.now().replace(microsecond=0, tzinfo=timezone(offset=timedelta()))
 
             query = (
                 select(DBNote.message, DBUser.email, DBUser.nickname)
-                .join(DBNote, DBUser.id == DBNote.user_id)
+                .join(DBNote, (DBUser.id == DBNote.user_id)) # type: ignore
                 .where(DBNote.remind_time < current_time)
                 .limit(high).offset(low)
             )
@@ -37,8 +37,10 @@ class EmailRepo:
     async def update_expired_notes(self):
         """Mark all the expired notes as completed"""
         current_time = datetime.now().replace(microsecond=0, tzinfo=timezone(offset=timedelta()))
-        update_query = update(DBNote).where((DBNote.is_completed == False) & (DBNote.remind_time >= current_time)).values(
-            is_completed=True
+        update_query = (update(DBNote)
+            .where(
+            (DBNote.is_completed == False) and (DBNote.remind_time >= current_time))
+            .values(is_completed=True)
         )
         await self._session.execute(update_query)
         await self._session.commit()
