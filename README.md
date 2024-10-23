@@ -1,13 +1,20 @@
 # Calendar
-Calendar is a to-do notificator. This project is an attempt of making a fullstack web application using Fastapi and React.
+**Calendar** is a TODO notificator.
 
-# Features
+This project is a web application based on Fastapi and React.
 
-# Structure
+## Features
+#### Using this app you can:
 
-# Installation
+* Make notes for yourself
+* Complete tasks
+* Mention when to remind you about your plans
+* Get notifications on your email
 
-# Contributing
+## Installation
+To launch project locally follow [INSTALLATION.md](https://github.com/klukashka/Calendar/blob/main/INSTALLATION.md)
+
+## Contributing
 
 If you're a developer, you can make a direct impact by contributing code. Clone the repository, make your changes, and submit a pull request.
 
