@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import Logout from '../hooks/Logout';
 import NoteCreate from '../hooks/NoteCreate';
 import NotesGet from '../hooks/NotesGet';
+import {back_host, back_port} from '../config.jsx';
 
 const Account = () => {
     const [user, setUser] = useState(null);
@@ -9,7 +10,7 @@ const Account = () => {
 
     useEffect(() => {
         const fetchUser = async () => {
-            const response = await fetch('http://localhost:8000/account/user_info', {
+            const response = await fetch(`http://${back_host}:${back_port}/account/user_info`, {
                 method: 'GET',
                 credentials: 'include',
             });

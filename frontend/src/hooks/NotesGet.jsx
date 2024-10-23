@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import {back_host, back_port} from '../config.jsx';
 
 function formatDate(dateString) {
     const options = { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit', hour12: false };
@@ -13,7 +14,7 @@ const NotesGet = () => {
   useEffect(() => {
     const fetchNotes = async () => {
       try {
-        const response = await fetch('http://localhost:8000/account/notes_get', {
+        const response = await fetch(`http://${back_host}:${back_port}/account/notes_get`, {
             method: 'GET',
             credentials: 'include',
         });
@@ -38,19 +39,19 @@ const NotesGet = () => {
       <ul>
         {notes.map((note, index) => (
           <li key={index}>
-            <p>
-                <div>Message:  </div>
+            <div>
+                <p>Message:  </p>
                 <strong>
                     {note.message}.
                 </strong>
-            </p>
-            <p>
-                <div>When to remind: </div>
+            </div>
+            <div>
+                <p>When to remind: </p>
                 <strong>
                     {formatDate(note.remind_time)}
                 </strong>
                 <br></br>
-            </p>
+            </div>
           </li>
         ))}
       </ul>

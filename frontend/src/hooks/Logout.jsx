@@ -1,5 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
+import {back_host, back_port} from '../config';
 
 const Logout = () => {
     const navigate = useNavigate();
@@ -8,7 +9,7 @@ const Logout = () => {
         event.preventDefault();
 
         try {
-            const response = await fetch('http://localhost:8000/auth/jwt/logout', {
+            const response = await fetch(`http://${back_host}:${back_port}/auth/jwt/logout`, {
                     method: 'POST',
                     credentials: 'include',
                 });

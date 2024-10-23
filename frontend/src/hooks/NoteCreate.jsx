@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import {back_host, back_port} from '../config.jsx';
 
 const NoteCreate = () => {
     const [remindTime, setRemindTime] = useState('');
@@ -17,7 +18,7 @@ const NoteCreate = () => {
         };
 
         try {
-            const response = await fetch('http://localhost:8000/account/note_create', {
+            const response = await fetch(`http://${back_host}:${back_port}/account/note_create`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',

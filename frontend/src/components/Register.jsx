@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import {back_host, back_port} from '../config.jsx';
 
 
 const Register = () => {
@@ -26,7 +27,7 @@ const Register = () => {
 //     formData.append('password', password);
 
     try {
-      const response = await fetch('http://localhost:8000/auth/register', {
+      const response = await fetch(`http://${back_host}:${back_port}/auth/register`, {
         method: 'POST',
         headers: {
                 'Content-Type': 'application/json',

@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import {back_host, back_port} from '../config.jsx';
 
 const Login = () => {
   const navigate = useNavigate();
@@ -17,7 +18,7 @@ const Login = () => {
     formData.append('password', password);
 
     try {
-      const response = await fetch('http://localhost:8000/auth/jwt/login', {
+      const response = await fetch(`http://${back_host}:${back_port}/auth/jwt/login`, {
         method: 'POST',
         credentials: 'include',
         body: formData,
