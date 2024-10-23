@@ -1,6 +1,8 @@
+from typing import AsyncGenerator
+
 from fastapi import HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select
+from sqlalchemy import select, Row
 from sqlalchemy.exc import IntegrityError, SQLAlchemyError
 from app.exceptions.repository import ModelExists
 from app.models.Note import Note as DBNote
@@ -30,23 +32,26 @@ class NoteRepo:
     async def get_note(self, note_id: int) -> NoteRead:
         """This function returns a note by its id"""
         try:
-            result = await self._session.execute(select(DBNote).where(DBNote.id == note_id))
+            result = await self._session.execute(select(DBNote).where(DBNote.id == note_id)) # type: ignore
             db_note = result.scalar_one_or_none()  # what is a scalar type?
             return _convert_db_note_to_read_note(db_note)
         except SQLAlchemyError:
             raise DBError("Failed to get the note from the database") from SQLAlchemyError
 
-    async def get_notes_by_user_id(self, _user_id: int, cursor: int, batch_size: int):
+    async def get_notes_by_user_id(
+            self,
+            _user_id: int,
+            cursor: int,
+            batch_size: int,
+    ) -> AsyncGenerator[NoteRead, None]:
         try:
             query = (
                 select(DBNote)
-                .where((DBNote.user_id == _user_id) & DBNote.is_completed==False)
+                .where((DBNote.user_id == _user_id) and (DBNote.is_completed==False)) # type: ignore
                 .limit(cursor + batch_size).offset(cursor)
             )
-            result = await self._session.execute(query)
-            # should add converting
-            notes = result.scalars().all()
-            return notes
+            for row in await self._session.execute(query):
+                yield _convert_db_note_to_read_note(row[0])
         except SQLAlchemyError:
             raise DBError("Failed to get the note from the database") from SQLAlchemyError
 

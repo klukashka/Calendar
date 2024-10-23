@@ -15,7 +15,7 @@ class UserRepo:
 
     async def get_user(self, user_id: int) -> Optional[UserRead]:
         try:
-            result = await self._session.execute(select(DBUser).where(DBUser.id == user_id))
+            result = await self._session.execute(select(DBUser).where(DBUser.id == user_id)) # type: ignore
             db_user = result.scalar_one_or_none()
             return _convert_db_user_to_user(db_user)
         except SQLAlchemyError:
