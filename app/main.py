@@ -1,3 +1,4 @@
+import logging
 import asyncio
 import uvicorn
 from fastapi.middleware.cors import CORSMiddleware
@@ -17,6 +18,12 @@ import tzlocal
 
 async def main() -> None:
     """Main function to run app"""
+    logging.basicConfig(
+        format='%(asctime)s : %(levelname)s : %(message)s',
+        level=LOG_LEVEL,
+        filename="test.log",
+    )
+
     app = FastAPI()
 
     session_pool = await setup_get_pool(DB_URL)
