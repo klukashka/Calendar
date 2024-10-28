@@ -19,5 +19,15 @@ class UserRead(schemas.BaseUser[int]):
     is_superuser: bool = False
     is_verified: bool = False
 
+    def to_dict(self):
+        return {
+            'id': str(self.id),
+            'email': str(self.email),
+            'nickname': str(self.nickname),
+            'is_active': str(self.is_active),
+            'is_superuser': str(self.is_superuser),
+            'is_verified': str(self.is_verified),
+        }
+
     class Config:
         from_attributes = True
