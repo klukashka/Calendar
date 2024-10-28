@@ -7,14 +7,15 @@ from app.schemas.email import EmailRead
 
 class EmailSender:
     """Class for producing and sending emails from admin to users"""
+
     def __init__(
-                 self,
-                 async_session_maker: async_sessionmaker[AsyncSession],
-                 admin_email: str,
-                 admin_email_password:str,
-                 smtp_port: int,
-                 smtp_server: str,
-            ):
+            self,
+            async_session_maker: async_sessionmaker[AsyncSession],
+            admin_email: str,
+            admin_email_password: str,
+            smtp_port: int,
+            smtp_server: str,
+    ):
         self._async_session_maker = async_session_maker
         self._mail = aiosmtplib.SMTP(hostname=smtp_server, port=smtp_port)
         self._sender = admin_email
@@ -34,7 +35,7 @@ class EmailSender:
         """Closes smtp server and quits all the processes"""
         await self._mail.quit()
 
-    async def distribute_emails(self, batch_size: int = 100):
+    async def distribute_emails(self, batch_size: int = 1000):
         """General distribution function"""
         offset = 0
         async with self._async_session_maker() as _session:
@@ -53,10 +54,11 @@ class EmailSender:
             await self.send_email(info.email, info.message, info.nickname)
         return generator_is_empty
 
+
 async def _fetch_emails(
         email_repo: EmailRepo,
         offset: int,
         batch_size: int
 ) -> AsyncGenerator[EmailRead, None]:
-    """Fetches emails using EmailRepo"""
+    """Fetch emails using EmailRepo"""
     return email_repo.get_notes_to_send(offset, batch_size + offset)
