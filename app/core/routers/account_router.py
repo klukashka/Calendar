@@ -25,10 +25,16 @@ async def get_account_router(
         async def note_create(
                 note_to_create: NoteCreate,
                 user: UserRead = Depends(users.current_user(active=True)),
+                batch_size: int = 10,
         ):
             """Set a new note to cache and database"""
             note = await note_repo.add_note(note_to_create, user.id)
-            await redis_pool.set_cached_user_note(user.id, note)
+            cached_notes = await redis_pool.get_cached_user_notes(user.id)
+            if cached_notes is None:
+                async for note in note_repo.get_notes_by_user_id(user.id, 0, batch_size):
+                    await redis_pool.set_cached_user_note(user.id, note)
+            else:
+                await redis_pool.set_cached_user_note(user.id, note)
             return note
 
         @router.get("/account/notes_get")
