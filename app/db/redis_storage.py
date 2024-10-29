@@ -39,8 +39,7 @@ class RedisStorage:
         try:
             async with self._pool:
                 key = self._key("user_info", user_id)
-                d = user_info.to_dict()
-                await self._pool.hset(key, mapping=d)
+                await self._pool.hset(key, mapping=user_info.to_dict())
                 return user_info
         except RedisError:
             raise RedisError("Failed to push user info by key")
@@ -53,7 +52,10 @@ class RedisStorage:
                 notes = await self._pool.hgetall(key)  # dict
                 if len(notes) == 0:
                     return None
-                return [NoteRead(**json.loads(note)) for note in notes.values()]
+                return sorted(
+                    list((NoteRead(**json.loads(note)) for note in notes.values())),  # not the best one
+                    key=lambda note: note.remind_time
+                )
         except RedisError:
             raise RedisError("Failed to get user notes by key")
 
@@ -70,6 +72,13 @@ class RedisStorage:
                 return note
         except RedisError:
             raise RedisError("Failed to set user note by key")
+
+    async def clear_cache(self):
+        """Remove all cached data"""
+        try:
+            await self._pool.flushdb()
+        except RedisError:
+            raise RedisError("Failed to update the cache")
 
     async def connect(self) -> None:
         if not await self._pool.ping():
