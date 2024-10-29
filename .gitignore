@@ -1,12 +1,5 @@
-# Created by https://www.toptal.com/developers/gitignore/api/flask
-# Edit at https://www.toptal.com/developers/gitignore?templates=flask
-
-### Flask ###
-instance/*
-!instance/.gitignore
-.webassets-cache
-parser/config.py
-server/config.py
+# redis data folder
+redisdata
 
 ### Flask.Python Stack ###
 # Byte-compiled / optimized / DLL files
@@ -71,9 +64,6 @@ cover/
 local_settings.py
 db.sqlite3
 db.sqlite3-journal
-
-# Flask stuff:
-instance/
 
 # Scrapy stuff:
 .scrapy
