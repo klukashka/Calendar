@@ -52,6 +52,7 @@ class NoteRepo:
                 .where((DBNote.user_id == _user_id) & (DBNote.is_completed == False))  # type: ignore
                 .limit(cursor + batch_size)
                 .offset(cursor)
+                .order_by(DBNote.remind_time.asc())
             )
             for row in await self._session.execute(query):
                 yield self._convert_db_note_to_read_note(row[0])
