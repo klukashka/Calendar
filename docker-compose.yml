@@ -8,22 +8,48 @@ services:
       - POSTGRES_USER=${DB_USER}
     volumes:
       - pgdata:/var/lib/postgresql/data
-#    container_name: db
     restart: always
     ports:
       - "5433:5432"
-#    hostname: ${DB_HOST}
-#    networks:
-#      - test
-#        ipv4_address: 172.28.2.1
+  redis:
+    image: redis:6.0.16
+    environment:
+      - REDIS_HOST=${REDIS_HOST}
+      - REDIS_PORT=${REDIS_PORT}
+      - REDIS_DB=${REDIS_DB}
+      - REDIS_PASS=${REDIS_PASS}
+    ports:
+      - "6381:6379"
+    volumes:
+      - ./redisdata:/data
+    command: >
+      sh -c '
+        mkdir -p /usr/local/etc/redis &&
+        echo "bind 0.0.0.0" > /usr/local/etc/redis/redis.conf &&
+        echo "requirepass $REDIS_PASS" >> /usr/local/etc/redis/redis.conf &&
+        echo "appendonly yes" >> /usr/local/etc/redis/redis.conf &&
+        redis-server /usr/local/etc/redis/redis.conf
+      '
+    healthcheck:
+      test: [ "CMD", "redis-cli", "-a", "$REDIS_PASS", "ping" ]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    deploy:
+      resources:
+        limits:
+          cpus: '0.50'
+          memory: 512M
+        reservations:
+          cpus: '0.25'
+          memory: 256M
+    depends_on:
+      - frontend
 
   backend:
-#    container_name: backend
     build:
       context: ./
       dockerfile: ./app/Dockerfile
-#    expose:
-#      - 8000
     ports:
       - "8000:8000"
     environment:
@@ -33,26 +59,29 @@ services:
       - FRONT_HOST=${FRONT_HOST}
       - FRONT_PORT=${FRONT_PORT}
       - SECRET_KEY=${SECRET_KEY}
+
+      - REDIS_HOST=${REDIS_HOST}
+      - REDIS_PORT=${REDIS_PORT}
+      - REDIS_DB=${REDIS_DB}
+      - REDIS_PASS=${REDIS_PASS}
+
       - DATE_TIME_FORMAT=${DATE_TIME_FORMAT}
 
       - SMTP_SERVER=${SMTP_SERVER}
       - SMTP_PORT=${SMTP_PORT}
       - ADMIN_EMAIL=${ADMIN_EMAIL}
       - ADMIN_EMAIL_PASSWORD=${ADMIN_EMAIL_PASSWORD}
+
+      - LOG_LEVEL=${LOG_LEVEL}
+      - LOG_FILE=${LOG_FILE}
     restart: always
     depends_on:
       - db
-#    networks:
-#      - test
-#        ipv4_address: 172.28.2.2
 
   frontend:
-#    container_name: frontend
     build:
       context: .
       dockerfile: ./frontend/Dockerfile
-#    expose:
-#      - 5173
     ports:
       - "5173:5173"
     environment:
@@ -63,11 +92,7 @@ services:
     restart: always
     depends_on:
       - backend
-#    networks:
-#      - test
-#        ipv4_address: 172.28.2.3
-#networks:
-#  test:
-#    driver: bridge
+
 volumes:
   pgdata:
+  redisdata:
