@@ -7,15 +7,19 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.db.connector import setup_get_pool
 from fastapi import FastAPI
 from fastapi_users import FastAPIUsers
-from app.models.User import User
+from app.email_broker.email_broker import SMTPBroker
+from app.models.user import User
 from app.config import *
 from app.auth.auth import auth_backend
 from app.auth.manager import providing_user_manager
-from app.core.email_sender import EmailSender
+from app.email_broker.email_broker_repo import EmailBrokerRepo
+from aiosmtplib.smtp import SMTP
 from app.core.routers_includer import include_routers
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from apscheduler.triggers.interval import IntervalTrigger
-from app.db.redis_storage import RedisStorage
+from app.db.cache_storage.cache_repo import CacheRepo
+from app.db.cache_storage.cache_redis import RedisStorage
+from redis.asyncio import Redis
 
 
 async def main() -> None:
@@ -30,14 +34,6 @@ async def main() -> None:
     app = FastAPI()
 
     session_pool = await setup_get_pool(DB_URL)
-
-    redis_pool = RedisStorage(
-        host=REDIS_HOST,
-        port=int(REDIS_PORT),
-        db=int(REDIS_DB),
-        password=REDIS_PASS,
-    )
-    await redis_pool.connect()
 
     origins = [
         f"http://{FRONT_HOST}:{FRONT_PORT}",
@@ -55,20 +51,39 @@ async def main() -> None:
         [auth_backend],
     )
 
-    await include_routers(app, users, session_pool, redis_pool)
+    # ----------- Redis -----------------
+    redis = Redis(
+        host=REDIS_HOST,
+        port=int(REDIS_PORT),
+        db=int(REDIS_DB),
+        password=REDIS_PASS,
+    )
+    redis_storage = RedisStorage(redis)
+    cache_pool = CacheRepo(redis_storage)
+    await cache_pool.connect()
+    # -----------------------------------
+    # -------- Email broker -------------
+    mail = SMTP(port=EMAIL_PORT, hostname=EMAIL_SERVER)
+    smtp_broker = SMTPBroker(
+        mail,
+        session_pool,
+        ADMIN_EMAIL,
+        ADMIN_EMAIL_PASSWORD
+    )
+    email_broker = EmailBrokerRepo(smtp_broker)
+    await email_broker.connect()
+    # ------------------------------------
 
-    email_sender = EmailSender(session_pool, ADMIN_EMAIL, ADMIN_EMAIL_PASSWORD, SMTP_PORT, SMTP_SERVER)
-    await email_sender.start()
+    await include_routers(app, users, session_pool, cache_pool)
 
     scheduler = _init_scheduler()
-
     scheduler.add_job(
-        redis_pool.clear_cache,
+        cache_pool.clear_cache,
         IntervalTrigger(seconds=30),
         next_run_time=datetime.now(),
     )
     scheduler.add_job(
-        email_sender.distribute_emails,
+        email_broker.distribute_emails,
         IntervalTrigger(seconds=30),
         next_run_time=datetime.now(),
     )
@@ -78,8 +93,8 @@ async def main() -> None:
         server = uvicorn.Server(config)
         await server.serve()
     finally:
-        await email_sender.close()
-        await redis_pool.close()
+        await email_broker.close()
+        await cache_pool.close()
 
 
 def _init_scheduler() -> AsyncIOScheduler:
