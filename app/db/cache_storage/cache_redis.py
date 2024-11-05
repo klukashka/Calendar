@@ -8,7 +8,7 @@ from app.db.cache_storage.cache_repo import AbstractCacheStorage
 
 
 class RedisStorage(AbstractCacheStorage):
-    """Storage to cache data"""
+    """Redis storage to cache data"""
 
     def __init__(self, pool: Redis) -> None:
         self._pool = pool
@@ -21,7 +21,7 @@ class RedisStorage(AbstractCacheStorage):
                 user_info = await self._pool.hgetall(key)
                 if not user_info:
                     return None
-                # print(user_info)
+                user_info = {k.decode(): v.decode() for k, v in user_info.items()}
                 return UserRead(**user_info)
         except RedisError as e:
             raise RedisError(f"Failed to get user:{user_id} info by key") from e
@@ -29,26 +29,22 @@ class RedisStorage(AbstractCacheStorage):
     async def set_cached_user_info(self, user_id: int, user_info: UserRead) -> UserRead:
         """Set user info to cache"""
         key = self._get_user_info_key(user_id)
-        # print(user_info, user_info.id)
         try:
             async with self._pool:
-                await self._pool.hset(key, mapping=dict(user_info))
+                await self._pool.hset(key, mapping=user_info.to_dict())
                 return user_info
         except RedisError as e:
-            raise RedisError(f"Failed to push user:{user_id} info:{user_info.id} by key") from e
+            raise RedisError(f"Failed to push user:{user_id} info by key") from e
 
     async def get_cached_user_notes(self, user_id: int) -> List[NoteRead] | None:
         """Retrieve user notes if available else None"""
         key = self._get_user_notes_key(user_id)
         try:
             async with self._pool:
-                notes = await self._pool.hgetall(key)  # dict
+                notes = await self._pool.lrange(key, 0, -1)  # list
                 if not notes:
                     return None
-                return sorted(
-                    list((NoteRead(**json.loads(note)) for note in notes.values())),  # not the best one
-                    key=lambda note: note.remind_time
-                )
+                return list(NoteRead(**json.loads(note)) for note in notes)
         except RedisError as e:
             raise RedisError(f"Failed to get user:{user_id} notes by key") from e
 
@@ -57,11 +53,7 @@ class RedisStorage(AbstractCacheStorage):
         key = self._get_user_notes_key(user_id)
         try:
             async with self._pool:
-                retrieved_data = await self._pool.hgetall(key)
-                notes = {k: json.loads(v) for k, v in retrieved_data.items()}
-                notes[note.id] = dict(note)
-                for note_id, notes_item in notes.items():
-                    await self._pool.hset(key, note_id, json.dumps(notes_item))
+                await self._pool.rpush(key, json.dumps(note.to_dict()))
                 return note
         except RedisError as e:
             raise RedisError(f"Failed to set user:{user_id} note{note.id} by key") from e
