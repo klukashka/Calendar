@@ -8,7 +8,7 @@ class Note(Base):
     __tablename__ = "note"
     id = Column(BigInteger, primary_key=True, unique=True, autoincrement=True)
     user_id = Column(BigInteger, ForeignKey("user.id"))  # the owner of that note
-    remind_time = Column(DateTime(timezone=True), nullable=False)  # time when to send a notification (UTC)
+    remind_time = Column(DateTime(timezone=False), nullable=False)  # time when to send a notification (UTC)
     time_zone = Column(String, nullable=False)  # time zone where that note was created
     message = Column(String, nullable=True)  # what should be written in a notification
     important = Column(Boolean, nullable=False)  # if it is an important one (to send notifications or not)
