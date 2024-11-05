@@ -11,11 +11,11 @@ class AbstractCacheStorage(ABC):
 
     @abstractmethod
     async def connect(self) -> None:
-        self._log.debug("Cache storage connected successfully")
+        self._log.debug("Cache storage was connected successfully")
 
     @abstractmethod
     async def close(self) -> None:
-        self._log.debug("Cache storage closed successfully")
+        self._log.debug("Cache storage was closed successfully")
 
     @abstractmethod
     async def clear_cache(self) -> None:
