@@ -7,7 +7,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.db.connector import setup_get_pool
 from fastapi import FastAPI
 from fastapi_users import FastAPIUsers
-from app.email_broker.email_broker import SMTPBroker
+from app.email_broker.smtp_broker import SMTPBroker
 from app.models.user import User
 from app.config import *
 from app.auth.auth import auth_backend
@@ -86,6 +86,7 @@ async def main() -> None:
         email_broker.distribute_emails,
         IntervalTrigger(seconds=30),
         next_run_time=datetime.now(),
+        max_instances=1,
     )
 
     try:
