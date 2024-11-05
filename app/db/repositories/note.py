@@ -46,7 +46,7 @@ class NoteRepo:
         try:
             query = (
                 select(DBNote)
-                .where((DBNote.user_id == user_id) & (DBNote.is_completed == False))  # type: ignore
+                .where((DBNote.user_id == user_id) & (DBNote.is_completed is False))  # type: ignore
                 .limit(cursor + self._read_batch_size)
                 .offset(cursor)
                 .order_by(DBNote.remind_time.asc())

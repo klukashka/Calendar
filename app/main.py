@@ -9,7 +9,7 @@ from fastapi import FastAPI
 from fastapi_users import FastAPIUsers
 from app.email_broker.smtp_broker import SMTPBroker
 from app.models.user import User
-from app.config import *
+import app.config as conf
 from app.auth.auth import auth_backend
 from app.auth.manager import providing_user_manager
 from app.email_broker.email_broker_repo import EmailBrokerRepo
@@ -27,16 +27,16 @@ async def main() -> None:
 
     logging.basicConfig(
         format='%(asctime)s : %(levelname)s : %(message)s',
-        level=LOG_LEVEL,
-        filename=LOG_FILE,
+        level=conf.LOG_LEVEL,
+        filename=conf.LOG_FILE,
     )
 
     app = FastAPI()
 
-    session_pool = await setup_get_pool(DB_URL)
+    session_pool = await setup_get_pool(conf.DB_URL)
 
     origins = [
-        f"http://{FRONT_HOST}:{FRONT_PORT}",
+        f"http://{conf.FRONT_HOST}:{conf.FRONT_PORT}",
     ]
     app.add_middleware(
         CORSMiddleware,
@@ -53,22 +53,22 @@ async def main() -> None:
 
     # ----------- Redis -----------------
     redis = Redis(
-        host=REDIS_HOST,
-        port=int(REDIS_PORT),
-        db=int(REDIS_DB),
-        password=REDIS_PASS,
+        host=conf.REDIS_HOST,
+        port=conf.REDIS_PORT,
+        db=conf.REDIS_DB,
+        password=conf.REDIS_PASS,
     )
     redis_storage = RedisStorage(redis)
     cache_pool = CacheRepo(redis_storage)
     await cache_pool.connect()
     # -----------------------------------
     # -------- Email broker -------------
-    mail = SMTP(port=EMAIL_PORT, hostname=EMAIL_SERVER)
+    mail = SMTP(port=conf.EMAIL_PORT, hostname=conf.EMAIL_SERVER)
     smtp_broker = SMTPBroker(
         mail,
         session_pool,
-        ADMIN_EMAIL,
-        ADMIN_EMAIL_PASSWORD
+        conf.ADMIN_EMAIL,
+        conf.ADMIN_EMAIL_PASSWORD
     )
     email_broker = EmailBrokerRepo(smtp_broker)
     await email_broker.connect()
@@ -89,7 +89,7 @@ async def main() -> None:
     )
 
     try:
-        config = uvicorn.Config(app, log_level="info", host=BACK_HOST, port=int(BACK_PORT))
+        config = uvicorn.Config(app, log_level="info", host=conf.BACK_HOST, port=conf.BACK_PORT)
         server = uvicorn.Server(config)
         await server.serve()
     finally:
