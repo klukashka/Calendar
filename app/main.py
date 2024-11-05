@@ -86,7 +86,6 @@ async def main() -> None:
         email_broker.distribute_emails,
         IntervalTrigger(seconds=30),
         next_run_time=datetime.now(),
-        max_instances=1,
     )
 
     try:
