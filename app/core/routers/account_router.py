@@ -30,7 +30,7 @@ async def get_account_router(
             """Set a new note to cache and database"""
             note = await note_repo.add_note(note_to_create, user.id)
             cached_notes = await cache_pool.get_cached_user_notes(user.id)
-            if cached_notes is None:
+            if not cached_notes:
                 async for note in note_repo.get_notes_by_user_id(user.id, 0):
                     await cache_pool.set_cached_user_note(user.id, note)
             else:
@@ -45,9 +45,8 @@ async def get_account_router(
             cached_notes = await cache_pool.get_cached_user_notes(user.id)
             if cached_notes is not None:
                 return cached_notes
-            notes = []  # yet not the best one
-            async for note in note_repo.get_notes_by_user_id(user.id, 0):
-                notes.append(note)
+            notes = [note async for note in note_repo.get_notes_by_user_id(user.id, 0)]
+            for note in notes:
                 await cache_pool.set_cached_user_note(user.id, note)
             return notes
 
