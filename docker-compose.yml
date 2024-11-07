@@ -54,6 +54,13 @@ services:
       - "8000:8000"
     environment:
       - DB_URL=${DB_URL}
+
+      - DB_HOST=${DB_HOST}
+      - DB_PORT=${DB_PORT}
+      - DB_NAME=${DB_NAME}
+      - DB_USER=${DB_USER}
+      - DB_PASS={DB_PASS}
+
       - BACK_HOST=${BACK_HOST}
       - BACK_PORT=${BACK_PORT}
       - FRONT_HOST=${FRONT_HOST}
@@ -67,8 +74,8 @@ services:
 
       - DATE_TIME_FORMAT=${DATE_TIME_FORMAT}
 
-      - SMTP_SERVER=${SMTP_SERVER}
-      - SMTP_PORT=${SMTP_PORT}
+      - EMAIL_SERVER=${EMAIL_SERVER}
+      - EMAIL_PORT=${EMAIL_PORT}
       - ADMIN_EMAIL=${ADMIN_EMAIL}
       - ADMIN_EMAIL_PASSWORD=${ADMIN_EMAIL_PASSWORD}
 
