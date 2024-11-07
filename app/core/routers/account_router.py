@@ -43,7 +43,7 @@ async def get_account_router(
         ) -> List[NoteRead]:
             """Retrieve notes from cache or database if the cache is empty"""
             cached_notes = await cache_pool.get_cached_user_notes(user.id)
-            if cached_notes is not None:
+            if cached_notes:
                 return cached_notes
             notes = [note async for note in note_repo.get_notes_by_user_id(user.id, 0)]
             for note in notes:
@@ -54,7 +54,7 @@ async def get_account_router(
         async def get_user_info(user: UserRead = Depends(users.current_user(active=True))) -> UserRead:
             """Retrieve user info from cache or database if cache is empty"""
             cached_user_info = await cache_pool.get_cached_user_info(user.id)
-            if cached_user_info is not None:
+            if cached_user_info:
                 return cached_user_info
             user = await user_repo.get_user(user.id)
             await cache_pool.set_cached_user_info(user.id, user)
