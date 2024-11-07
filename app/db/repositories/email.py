@@ -24,8 +24,8 @@ class EmailRepo:
                 .join(DBNote, (DBUser.id == DBNote.user_id))  # type: ignore
                 .where(
                     (DBNote.remind_time <= current_time) &
-                    (DBNote.is_completed is False) &
-                    (DBNote.important is True)
+                    (~DBNote.is_completed) &
+                    DBNote.important
                 )
                 .limit(high)
                 .offset(low)
@@ -46,7 +46,7 @@ class EmailRepo:
         try:
             sub_query = (
                 select(DBNote.id)
-                .where((DBNote.is_completed is False) & (DBNote.remind_time <= current_time))
+                .where((~DBNote.is_completed) & (DBNote.remind_time <= current_time))
                 .limit(high)
                 .offset(low)
             )

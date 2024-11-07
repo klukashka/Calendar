@@ -46,7 +46,7 @@ class NoteRepo:
         try:
             query = (
                 select(DBNote)
-                .where((DBNote.user_id == user_id) & (DBNote.is_completed is False))  # type: ignore
+                .where((DBNote.user_id == user_id) & (~DBNote.is_completed))  # type: ignore
                 .limit(cursor + self._read_batch_size)
                 .offset(cursor)
                 .order_by(DBNote.remind_time.asc())
@@ -74,7 +74,6 @@ class NoteRepo:
             raise HTTPException(status_code=406, detail="Wrong date-time data format")
         converted_remind_time = NoteRepo._convert_to_utc(note.remind_time)
         current_time = NoteRepo._utc_cur_time()
-        # print(repr(current_time), "- cur", "||||", repr(converted_remind_time), "- conv")
         if converted_remind_time < current_time:
             raise HTTPException(status_code=406, detail="Inappropriate time value")
         return DBNote(
@@ -89,7 +88,6 @@ class NoteRepo:
     @staticmethod
     def _convert_db_note_to_read_note(db_note: DBNote) -> NoteRead:
         if db_note.remind_time:
-            # print(db_note.time_zone, " time zone")
             remind_time_to_return = NoteRepo._localize(db_note.remind_time, db_note.time_zone)
         else:
             remind_time_to_return = None
