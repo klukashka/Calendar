@@ -25,6 +25,7 @@ apscheduler = "^3.10.4"
 tzlocal = "^5.2"
 aiosmtplib = "^3.0.2"
 redis = "^5.2.0"
+pytest = "^8.3.3"
 
 
 [build-system]
