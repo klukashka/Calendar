@@ -1,10 +1,29 @@
 from typing import List
-from app.db.cache_storage.cache_repo import AbstractCacheStorage
-from app.schemas.note import NoteRead
-from app.schemas.user import UserRead
+from datetime import datetime
+
+from pydantic import BaseModel
 
 
-class MockCacheStorage(AbstractCacheStorage):
+class NoteRead(BaseModel):
+    id: int
+    user_id: int
+    remind_time: datetime
+    time_zone: str
+    message: str
+    important: bool
+    is_completed: bool
+
+
+class UserRead(BaseModel):
+    id: int
+    email: str
+    nickname: str
+    is_active: bool = True
+    is_superuser: bool = False
+    is_verified: bool = False
+
+
+class MockCacheStorage:
     def __init__(self):
         self.cache = {}
 
