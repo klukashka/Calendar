@@ -5,6 +5,7 @@ const NoteCreate = () => {
     const [remindTime, setRemindTime] = useState('');
     const [message, setMessage] = useState('');
     const [important, setImportant] = useState(false);
+    const [timeZone, setTimeZone] = useState('');
 
     const handleCheckboxChange = (event) => {
         const { checked } = event.target;
@@ -15,12 +16,17 @@ const NoteCreate = () => {
     const [success, setSuccess] = useState('');
 
     const handleNoteCreate = async (event) => {
+
+        const localTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+        setTimeZone(localTimeZone);
+
         event.preventDefault();
 
         const note_to_create = {
         'remind_time': remindTime,
         'message': message,
         'important': important,
+        'time_zone': localTimeZone,
         };
 
         try {

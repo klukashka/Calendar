@@ -6,7 +6,7 @@ class UserCreate(schemas.BaseUserCreate):
     email: str
     nickname: str
     password: str
-    is_active: Optional[bool] = True # what's the use of None (Optional) for this field?
+    is_active: Optional[bool] = True
     is_superuser: Optional[bool] = False
     is_verified: Optional[bool] = False
 

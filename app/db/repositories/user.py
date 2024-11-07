@@ -2,9 +2,8 @@ from typing import Optional
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy import select
-from app.models.User import User as DBUser
+from app.models.user import User as DBUser
 from app.schemas.user import UserRead
-from app.exceptions.repository import DBError
 
 
 class UserRepo:
@@ -19,8 +18,8 @@ class UserRepo:
             result = await self._session.execute(select(DBUser).where(DBUser.id == user_id))  # type: ignore
             db_user = result.scalar_one_or_none()
             return self._convert_db_user_to_user(db_user)
-        except SQLAlchemyError:
-            raise DBError("Failed to get the user from the database") from SQLAlchemyError
+        except SQLAlchemyError as e:
+            raise SQLAlchemyError(f"Failed to get the user:{user_id} info from the database") from e
 
     @staticmethod
     def _convert_db_user_to_user(db_user: DBUser) -> UserRead:

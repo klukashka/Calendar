@@ -1,33 +1,34 @@
 from dotenv import load_dotenv
+from typing import Final
 import os
 
 load_dotenv()
 
-DB_URL = os.environ.get("DB_URL")
+DB_URL: Final[str] = os.environ.get("DB_URL")
 
-DB_HOST = os.environ.get("DB_HOST")
-DB_PORT = os.environ.get("DB_PORT")
-DB_NAME = os.environ.get("DB_NAME")
-DB_USER = os.environ.get("DB_USER")
-DB_PASS = os.environ.get("DB_PASS")
+DB_HOST: Final[str] = os.environ.get("DB_HOST")
+DB_PORT: Final[int] = int(os.environ.get("DB_PORT"))
+DB_NAME: Final[str] = os.environ.get("DB_NAME")
+DB_USER: Final[str] = os.environ.get("DB_USER")
+DB_PASS: Final[str] = os.environ.get("DB_PASS")
 
-BACK_HOST = os.environ.get("BACK_HOST")
-BACK_PORT = os.environ.get("BACK_PORT")
-FRONT_HOST = os.environ.get("FRONT_HOST")
-FRONT_PORT = os.environ.get("FRONT_PORT")
-SECRET_KEY = os.environ.get("SECRET_KEY")
+BACK_HOST: Final[str] = os.environ.get("BACK_HOST")
+BACK_PORT: Final[int] = int(os.environ.get("BACK_PORT"))
+FRONT_HOST: Final[str] = os.environ.get("FRONT_HOST")
+FRONT_PORT: Final[int] = int(os.environ.get("FRONT_PORT"))
+SECRET_KEY: Final[str] = os.environ.get("SECRET_KEY")
 
-REDIS_HOST = os.environ.get('REDIS_HOST')
-REDIS_PORT = os.environ.get('REDIS_PORT')
-REDIS_DB = os.environ.get('REDIS_DB')
-REDIS_PASS = os.environ.get("REDIS_PASS")
+REDIS_HOST: Final[str] = os.environ.get('REDIS_HOST')
+REDIS_PORT: Final[int] = int(os.environ.get('REDIS_PORT'))
+REDIS_DB: Final[int] = int(os.environ.get('REDIS_DB'))
+REDIS_PASS: Final[str] = os.environ.get("REDIS_PASS")
 
-DATE_TIME_FORMAT = os.environ.get("DATE_TIME_FORMAT")
+DATE_TIME_FORMAT: Final[str] = os.environ.get("DATE_TIME_FORMAT")
 
-SMTP_SERVER = os.environ.get("SMTP_SERVER")
-SMTP_PORT = os.environ.get("SMTP_PORT")
-ADMIN_EMAIL = os.environ.get("ADMIN_EMAIL")
-ADMIN_EMAIL_PASSWORD = os.environ.get("ADMIN_EMAIL_PASSWORD")
+EMAIL_SERVER: Final[str] = os.environ.get("EMAIL_SERVER")
+EMAIL_PORT: Final[int] = int(os.environ.get("EMAIL_PORT"))
+ADMIN_EMAIL: Final[str] = os.environ.get("ADMIN_EMAIL")
+ADMIN_EMAIL_PASSWORD: Final[str] = os.environ.get("ADMIN_EMAIL_PASSWORD")
 
-LOG_LEVEL = os.environ.get("LOG_LEVEL")
-LOG_FILE = os.environ.get("LOG_FILE")
+LOG_LEVEL: Final[str] = os.environ.get("LOG_LEVEL")
+LOG_FILE: Final[str] = os.environ.get("LOG_FILE")
