@@ -7,12 +7,12 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.db.connector import setup_get_pool
 from fastapi import FastAPI
 from fastapi_users import FastAPIUsers
-from app.email_broker.smtp_broker import SMTPBroker
+from app.services.email.smtp_broker import SMTPBroker
 from app.models.user import User
 import app.config as conf
 from app.auth.auth import auth_backend
 from app.auth.manager import providing_user_manager
-from app.email_broker.email_broker_repo import EmailBrokerRepo
+from app.services.email.email_broker_repo import EmailBrokerRepo
 from aiosmtplib.smtp import SMTP
 from app.core.routers_includer import include_routers
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
