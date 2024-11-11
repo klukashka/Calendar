@@ -1,5 +1,6 @@
-from app.email_broker.email_broker_repo import AbstractEmailBroker
-from aiosmtplib.smtp import SMTP, SMTPException
+from app.services.email_broker_repo import AbstractEmailBroker
+from aiosmtplib.smtp import SMTP
+from aiosmtplib.errors import SMTPException
 from typing import AsyncGenerator
 from sqlalchemy.ext.asyncio import async_sessionmaker, AsyncSession
 from app.db.repositories.email import EmailRepo
@@ -55,7 +56,7 @@ class SMTPBroker(AbstractEmailBroker):
                 except StopAsyncIteration:
                     break
                 except Exception as e:  # discard changes if Error occurs during distribution
-                    await self._roll_back(email_repo)
+                    await email_repo.roll_back()
                     raise Exception() from e
 
     async def _fetch_emails(
@@ -65,9 +66,3 @@ class SMTPBroker(AbstractEmailBroker):
     ) -> AsyncGenerator[EmailRead, None] | None:
         """Fetch a batch of emails using EmailRepo"""
         return email_repo.get_notes_to_send(offset, self.batch_size + offset)
-
-    @staticmethod
-    async def _roll_back(
-            email_repo: EmailRepo,
-    ) -> None:
-        await email_repo.roll_back()

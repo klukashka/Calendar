@@ -7,24 +7,25 @@ class AbstractEmailBroker(ABC):
 
     @abstractmethod
     async def connect(self) -> None:
-        self._log.debug("Email broker was connected successfully")
+        raise NotImplementedError
 
     @abstractmethod
     async def close(self) -> None:
-        self._log.debug("Email broker was closed successfully")
+        raise NotImplementedError
 
     @abstractmethod
     async def send_email(self, recipient: str, content: str, nickname: str) -> None:
-        self._log.debug("Email was send successfully")
+        raise NotImplementedError
 
     @abstractmethod
     async def distribute_emails(self) -> None:
-        self._log.debug("Email broker began distributing emails")
+        raise NotImplementedError
 
 
 class EmailBrokerRepo(AbstractEmailBroker):
     def __init__(self, email_broker: AbstractEmailBroker):
         self._email_broker = email_broker
+        self.message_maker = MessageMaker()
 
     async def connect(self) -> None:
         return await self._email_broker.connect()
