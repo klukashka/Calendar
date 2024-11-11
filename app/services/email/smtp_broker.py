@@ -1,10 +1,11 @@
-from app.services.email_broker_repo import AbstractEmailBroker
+from app.services.email.email_broker_repo import AbstractEmailBroker
 from aiosmtplib.smtp import SMTP
 from aiosmtplib.errors import SMTPException
 from typing import AsyncGenerator
 from sqlalchemy.ext.asyncio import async_sessionmaker, AsyncSession
 from app.db.repositories.email import EmailRepo
 from app.schemas.email import EmailRead
+from app.services.email.message_maker import notify
 
 
 class SMTPBroker(AbstractEmailBroker):
@@ -32,7 +33,7 @@ class SMTPBroker(AbstractEmailBroker):
 
     async def send_email(self, recipient: str, content: str, nickname: str) -> None:
         """Send an email from admin server to a user"""
-        message = f"Hello, {nickname}!\n" + content
+        message = await notify(content, nickname)
         try:
             await self._mail.sendmail(self._sender, recipient, message)
         except SMTPException as e:

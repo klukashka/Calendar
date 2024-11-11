@@ -7,35 +7,34 @@ from abc import ABC, abstractmethod
 
 class AbstractCacheStorage(ABC):
     """General implementation of cache storage"""
-    _log = logging.getLogger()
 
     @abstractmethod
     async def connect(self) -> None:
-        self._log.debug("Cache storage was connected successfully")
+        raise NotImplementedError
 
     @abstractmethod
     async def close(self) -> None:
-        self._log.debug("Cache storage was closed successfully")
+        raise NotImplementedError
 
     @abstractmethod
     async def clear_cache(self) -> None:
-        self._log.debug("Cache database was cleared successfully")
+        raise NotImplementedError
 
     @abstractmethod
     async def get_cached_user_info(self, user_id: int) -> None:
-        self._log.debug(f"Got cached user info of user {user_id}")
+        raise NotImplementedError
 
     @abstractmethod
     async def set_cached_user_info(self, user_id: int, user_info: UserRead) -> None:
-        self._log.debug(f"Set cached user info {user_info.id} of user {user_id}")
+        raise NotImplementedError
 
     @abstractmethod
     async def get_cached_user_notes(self, user_id: int) -> None:
-        self._log.debug(f"Got cached user notes of user {user_id}")
+        raise NotImplementedError
 
     @abstractmethod
     async def set_cached_user_note(self, user_id: int, note: NoteRead) -> None:
-        self._log.debug(f"Set cached user note {note.id} of user {user_id}")
+        raise NotImplementedError
 
 
 class CacheRepo(AbstractCacheStorage):
