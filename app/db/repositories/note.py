@@ -1,5 +1,5 @@
 from typing import AsyncGenerator
-from datetime import timezone, datetime
+from datetime import datetime
 from fastapi import HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
@@ -7,7 +7,7 @@ from sqlalchemy.exc import SQLAlchemyError
 from app.models.note import Note as DBNote
 from app.schemas.note import NoteCreate, NoteRead
 from app.config import DATE_TIME_FORMAT
-import pytz
+from app.utils.time_manager import utc_cur_time, convert_to_utc, localize
 
 
 class NoteRepo:
@@ -71,8 +71,8 @@ class NoteRepo:
     def _convert_create_note_to_db_note(note: NoteCreate, user_id: int) -> DBNote:
         if not datetime.strptime(note.remind_time, DATE_TIME_FORMAT):
             raise HTTPException(status_code=406, detail="Wrong date-time data format")
-        converted_remind_time = NoteRepo._convert_to_utc(note.remind_time, note.time_zone)
-        current_time = NoteRepo._utc_cur_time()
+        converted_remind_time = convert_to_utc(note.remind_time, note.time_zone)
+        current_time = utc_cur_time()
         if converted_remind_time < current_time:
             raise HTTPException(status_code=406, detail="Inappropriate time value")
         return DBNote(
@@ -87,7 +87,7 @@ class NoteRepo:
     @staticmethod
     def _convert_db_note_to_read_note(db_note: DBNote) -> NoteRead:
         if db_note.remind_time:
-            remind_time_to_return = NoteRepo._localize(db_note.remind_time, db_note.time_zone)
+            remind_time_to_return = localize(db_note.remind_time, db_note.time_zone)
         else:
             remind_time_to_return = None
         return NoteRead(
@@ -99,35 +99,3 @@ class NoteRepo:
             important=bool(db_note.important),
             is_completed=bool(db_note.is_completed),
         )
-
-    @staticmethod
-    def _utc_cur_time() -> datetime:
-        """Return current time in UTC"""
-        utc_time = datetime.now(pytz.utc)
-        naive_utc_time = utc_time.replace(microsecond=0, tzinfo=None)
-        return naive_utc_time
-
-    @staticmethod
-    def _localize(dt: datetime, tz: str) -> datetime:
-        """Convert aware datetime to necessary time zone"""
-        local_tz = pytz.timezone(tz)
-        try:
-            in_utc_time = pytz.utc.localize(dt)
-            local_time = in_utc_time.astimezone(local_tz)
-            return local_time
-        except ValueError as e:
-            raise ValueError(f"Failed to convert {dt}. Expected aware datetime") from e
-        except Exception as e:
-            raise Exception(f"Failed to convert {dt}.") from e
-
-    @staticmethod
-    def _convert_to_utc(dt: str, tz: str) -> datetime:
-        formatted_datetime = datetime.strptime(dt, DATE_TIME_FORMAT)  # Adjust format as necessary
-        # Get the local timezone using pytz
-        local_timezone = pytz.timezone(tz)
-        # Localize the naive datetime to the local timezone
-        local_datetime = local_timezone.localize(formatted_datetime)
-        # Convert to UTC
-        utc_datetime = local_datetime.astimezone(pytz.utc)
-        utc_naive = utc_datetime.replace(tzinfo=None)
-        return utc_naive

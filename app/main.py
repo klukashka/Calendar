@@ -9,7 +9,7 @@ from fastapi import FastAPI
 from fastapi_users import FastAPIUsers
 from app.services.email.smtp_broker import SMTPBroker
 from app.models.user import User
-import app.config as conf
+from app.config import conf
 from app.auth.auth import auth_backend
 from app.auth.manager import providing_user_manager
 from app.services.email.email_broker_repo import EmailBrokerRepo
@@ -93,6 +93,8 @@ async def main() -> None:
         server = uvicorn.Server(config)
         await server.serve()
     finally:
+        scheduler.remove_all_jobs()
+        scheduler.shutdown()
         await email_broker.close()
         await cache_pool.close()
 

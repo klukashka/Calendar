@@ -1,4 +1,3 @@
-import logging
 from typing import List
 from app.schemas.note import NoteRead
 from app.schemas.user import UserRead

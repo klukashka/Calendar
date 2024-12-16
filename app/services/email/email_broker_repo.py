@@ -25,7 +25,6 @@ class AbstractEmailBroker(ABC):
 class EmailBrokerRepo(AbstractEmailBroker):
     def __init__(self, email_broker: AbstractEmailBroker):
         self._email_broker = email_broker
-        self.message_maker = MessageMaker()
 
     async def connect(self) -> None:
         return await self._email_broker.connect()

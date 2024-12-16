@@ -1,6 +1,5 @@
 from datetime import datetime
 import pytz
-from app.config import DATE_TIME_FORMAT
 
 
 def utc_cur_time() -> datetime:
@@ -24,6 +23,7 @@ def localize(dt: datetime, tz: str) -> datetime:
 
 
 def convert_to_utc(dt: str, tz: str) -> datetime:
+    """Convert naive-datetime to aware-datetime in a specific timezone"""
     formatted_datetime = datetime.strptime(dt, DATE_TIME_FORMAT)  # Adjust format as necessary
     # Get the local timezone using pytz
     local_timezone = pytz.timezone(tz)
