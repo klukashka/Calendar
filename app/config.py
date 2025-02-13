@@ -10,6 +10,9 @@ import os
 from app.utils.singleton import singleton
 
 
+load_dotenv()
+
+
 @singleton
 class AppConfig:
     """
@@ -27,14 +30,13 @@ class AppConfig:
     BACK_PORT: Final[int] = int(os.environ.get("BACK_PORT"))
     FRONT_HOST: Final[str] = os.environ.get("FRONT_HOST")
     FRONT_PORT: Final[int] = int(os.environ.get("FRONT_PORT"))
+
     SECRET_KEY: Final[str] = os.environ.get("SECRET_KEY")
 
     REDIS_HOST: Final[str] = os.environ.get('REDIS_HOST')
     REDIS_PORT: Final[int] = int(os.environ.get('REDIS_PORT'))
     REDIS_DB: Final[int] = int(os.environ.get('REDIS_DB'))
     REDIS_PASS: Final[str] = os.environ.get("REDIS_PASS")
-
-    DATE_TIME_FORMAT: Final[str] = os.environ.get("DATE_TIME_FORMAT")
 
     EMAIL_SERVER: Final[str] = os.environ.get("EMAIL_SERVER")
     EMAIL_PORT: Final[int] = int(os.environ.get("EMAIL_PORT"))
@@ -45,5 +47,6 @@ class AppConfig:
     LOG_FILE: Final[str] = os.environ.get("LOG_FILE")
 
 
-load_dotenv()
+DATE_TIME_FORMAT: Final[str] = os.environ.get("DATE_TIME_FORMAT")
+
 conf = AppConfig()
