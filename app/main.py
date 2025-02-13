@@ -47,7 +47,7 @@ async def main() -> None:
     )
 
     users = FastAPIUsers[User, int](
-        await providing_user_manager(session_pool),
+        await providing_user_manager(session_pool, conf.SECRET_KEY),
         [auth_backend],
     )
 
