@@ -1,10 +1,12 @@
 import json
 from typing import List
+
 from redis import RedisError
 from redis.asyncio import Redis
+
+from app.db.cache_storage.cache_repo import AbstractCacheStorage
 from app.schemas.note import NoteRead
 from app.schemas.user import UserRead
-from app.db.cache_storage.cache_repo import AbstractCacheStorage
 
 
 class RedisStorage(AbstractCacheStorage):

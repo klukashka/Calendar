@@ -1,5 +1,7 @@
 from datetime import datetime
+
 import pytz
+
 from app.config import DATE_TIME_FORMAT
 
 

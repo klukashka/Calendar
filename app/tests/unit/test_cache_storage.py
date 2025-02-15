@@ -1,5 +1,5 @@
-from typing import List
 from datetime import datetime
+from typing import List
 
 from pydantic import BaseModel
 
@@ -75,11 +75,11 @@ class MockCacheStorage:
 def test_cache_00():
     user1 = UserRead(
         id=1,
-        email='user1@mail.com',
+        email="user1@mail.com",
         is_active=True,
         is_superuser=False,
         is_verified=False,
-        nickname='user1',
+        nickname="user1",
     )
     store = MockCacheStorage()
     store.set_cached_user_info(user1.id, user1)

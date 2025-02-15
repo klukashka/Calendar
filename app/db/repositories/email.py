@@ -1,9 +1,11 @@
 from typing import AsyncGenerator
+
 from sqlalchemy import select, update
+from sqlalchemy.exc import SQLAlchemyError
+from sqlalchemy.ext.asyncio import AsyncSession
+
 from app.models.note import Note as DBNote
 from app.models.user import User as DBUser
-from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.exc import SQLAlchemyError
 from app.schemas.email import EmailRead
 from app.utils.time_manager import utc_cur_time
 
@@ -21,11 +23,7 @@ class EmailRepo:
             query = (
                 select(DBNote.message, DBUser.email, DBUser.nickname)
                 .join(DBNote, (DBUser.id == DBNote.user_id))  # type: ignore
-                .where(
-                    (DBNote.remind_time <= current_time) &
-                    (~DBNote.is_completed) &
-                    DBNote.important
-                )
+                .where((DBNote.remind_time <= current_time) & (~DBNote.is_completed) & DBNote.important)
                 .limit(high)
                 .offset(low)
             )
@@ -49,11 +47,7 @@ class EmailRepo:
                 .limit(high)
                 .offset(low)
             )
-            update_query = (
-                update(DBNote)
-                .filter(DBNote.id.in_(sub_query))
-                .values(is_completed=True)
-            )
+            update_query = update(DBNote).filter(DBNote.id.in_(sub_query)).values(is_completed=True)
             await self._session.execute(update_query)
             await self._session.commit()
         except SQLAlchemyError as e:

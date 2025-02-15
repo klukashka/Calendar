@@ -1,32 +1,34 @@
-import logging
 import asyncio
+import logging
 from datetime import datetime
-import uvicorn
+
 import tzlocal
-from fastapi.middleware.cors import CORSMiddleware
-from app.db.connector import setup_get_pool
-from fastapi import FastAPI
-from fastapi_users import FastAPIUsers
-from app.services.email.smtp_broker import SMTPBroker
-from app.models.user import User
-from app.config import conf
-from app.auth.auth import auth_backend
-from app.auth.manager import providing_user_manager
-from app.services.email.email_broker_repo import EmailBrokerRepo
+import uvicorn
 from aiosmtplib.smtp import SMTP
-from app.core.routers_includer import include_routers
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from apscheduler.triggers.interval import IntervalTrigger
-from app.db.cache_storage.cache_repo import CacheRepo
-from app.db.cache_storage.cache_redis import RedisStorage
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi_users import FastAPIUsers
 from redis.asyncio import Redis
+
+from app.auth.auth import auth_backend
+from app.auth.manager import providing_user_manager
+from app.config import conf
+from app.core.routers_includer import include_routers
+from app.db.cache_storage.cache_redis import RedisStorage
+from app.db.cache_storage.cache_repo import CacheRepo
+from app.db.connector import setup_get_pool
+from app.models.user import User
+from app.services.email.email_broker_repo import EmailBrokerRepo
+from app.services.email.smtp_broker import SMTPBroker
 
 
 async def main() -> None:
     """Main function to run app"""
 
     logging.basicConfig(
-        format='%(asctime)s : %(levelname)s : %(message)s',
+        format="%(asctime)s : %(levelname)s : %(message)s",
         level=conf.LOG_LEVEL,
         filename=conf.LOG_FILE,
     )
@@ -56,6 +58,7 @@ async def main() -> None:
         host=conf.REDIS_HOST,
         port=conf.REDIS_PORT,
         db=conf.REDIS_DB,
+        username="default",
         password=conf.REDIS_PASS,
     )
     redis_storage = RedisStorage(redis)
@@ -63,13 +66,8 @@ async def main() -> None:
     await cache_pool.connect()
     # -----------------------------------
     # -------- Email broker -------------
-    mail = SMTP(port=conf.EMAIL_PORT, hostname=conf.EMAIL_SERVER)
-    smtp_broker = SMTPBroker(
-        mail,
-        session_pool,
-        conf.ADMIN_EMAIL,
-        conf.ADMIN_EMAIL_PASSWORD
-    )
+    mail = SMTP(port=conf.EMAIL_PORT, hostname=conf.EMAIL_HOST)
+    smtp_broker = SMTPBroker(mail, session_pool, conf.ADMIN_EMAIL, conf.ADMIN_EMAIL_PASSWORD)
     email_broker = EmailBrokerRepo(smtp_broker)
     await email_broker.connect()
     # ------------------------------------

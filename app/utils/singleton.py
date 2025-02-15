@@ -1,4 +1,4 @@
-from typing import Any, Type, Callable
+from typing import Any, Callable, Type
 
 
 def singleton(class_: Type) -> Callable[..., Any]:
@@ -6,7 +6,7 @@ def singleton(class_: Type) -> Callable[..., Any]:
     Singleton decorator allows to have only one instance of a class.
     Otherwise, ValueError is raised.
     """
-    instances: dict[Type: any] = {}
+    instances: dict[Type:any] = {}
 
     def get_instance(*args, **kwargs) -> Any:
         if class_ not in instances:

@@ -1,7 +1,8 @@
+from abc import ABC, abstractmethod
 from typing import List
+
 from app.schemas.note import NoteRead
 from app.schemas.user import UserRead
-from abc import ABC, abstractmethod
 
 
 class AbstractCacheStorage(ABC):

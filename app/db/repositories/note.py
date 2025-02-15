@@ -1,13 +1,15 @@
-from typing import AsyncGenerator
 from datetime import datetime
+from typing import AsyncGenerator
+
 from fastapi import HTTPException
-from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 from sqlalchemy.exc import SQLAlchemyError
+from sqlalchemy.ext.asyncio import AsyncSession
+
+from app.config import DATE_TIME_FORMAT
 from app.models.note import Note as DBNote
 from app.schemas.note import NoteCreate, NoteRead
-from app.config import DATE_TIME_FORMAT
-from app.utils.time_manager import utc_cur_time, convert_to_utc, localize
+from app.utils.time_manager import convert_to_utc, localize, utc_cur_time
 
 
 class NoteRepo:
@@ -37,9 +39,9 @@ class NoteRepo:
             raise SQLAlchemyError(f"Failed to get the note:{note_id} from the database") from e
 
     async def get_notes_by_user_id(
-            self,
-            user_id: int,
-            cursor: int,
+        self,
+        user_id: int,
+        cursor: int,
     ) -> AsyncGenerator[NoteRead, None]:
         """Get all user notes by user id"""
         try:

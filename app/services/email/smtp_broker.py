@@ -1,20 +1,22 @@
-from app.services.email.email_broker_repo import AbstractEmailBroker
-from aiosmtplib.smtp import SMTP
-from aiosmtplib.errors import SMTPException
 from typing import AsyncGenerator
-from sqlalchemy.ext.asyncio import async_sessionmaker, AsyncSession
+
+from aiosmtplib.errors import SMTPException
+from aiosmtplib.smtp import SMTP
+from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
+
 from app.db.repositories.email import EmailRepo
 from app.schemas.email import EmailRead
+from app.services.email.email_broker_repo import AbstractEmailBroker
 from app.services.email.message_maker import notify
 
 
 class SMTPBroker(AbstractEmailBroker):
     def __init__(
-            self,
-            mail: SMTP,
-            async_session_maker: async_sessionmaker[AsyncSession],
-            admin_email: str,
-            admin_email_password: str,
+        self,
+        mail: SMTP,
+        async_session_maker: async_sessionmaker[AsyncSession],
+        admin_email: str,
+        admin_email_password: str,
     ) -> None:
         self._mail = mail
         self._async_session_maker = async_session_maker
@@ -23,10 +25,11 @@ class SMTPBroker(AbstractEmailBroker):
         self.batch_size = 1000
 
     async def connect(self) -> None:
-        await self._mail.connect()
-        await self._mail.login(self._sender, self._password)
-        if not await self._mail.noop():
-            raise RuntimeError("Failed to connect SMTP server")
+        try:
+            await self._mail.connect()
+            await self._mail.login(self._sender, self._password)
+        except SMTPException as e:
+            raise SMTPException("Failed to connect SMTP server") from e
 
     async def close(self) -> None:
         await self._mail.quit()
@@ -40,7 +43,7 @@ class SMTPBroker(AbstractEmailBroker):
             raise SMTPException(f"Failed to send email to {recipient}") from e
 
     async def distribute_emails(self) -> None:
-        """Main email-distribution function"""
+        """Main email-distributing function"""
         offset = 0
         async with self._async_session_maker() as _session:
             email_repo = EmailRepo(_session)
@@ -61,9 +64,9 @@ class SMTPBroker(AbstractEmailBroker):
                     raise Exception() from e
 
     async def _fetch_emails(
-            self,
-            email_repo: EmailRepo,
-            offset: int,
+        self,
+        email_repo: EmailRepo,
+        offset: int,
     ) -> AsyncGenerator[EmailRead, None] | None:
         """Fetch a batch of emails using EmailRepo"""
         return email_repo.get_notes_to_send(offset, self.batch_size + offset)

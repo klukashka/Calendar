@@ -1,7 +1,9 @@
 from typing import Optional
-from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.exc import SQLAlchemyError
+
 from sqlalchemy import select
+from sqlalchemy.exc import SQLAlchemyError
+from sqlalchemy.ext.asyncio import AsyncSession
+
 from app.models.user import User as DBUser
 from app.schemas.user import UserRead
 

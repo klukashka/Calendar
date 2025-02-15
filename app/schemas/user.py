@@ -1,4 +1,6 @@
+from datetime import datetime
 from typing import Optional
+
 from fastapi_users import schemas
 
 
@@ -16,17 +18,19 @@ class UserRead(schemas.BaseUser[int]):
     email: str
     nickname: str
     is_active: bool = True
+    registered_at: datetime
     is_superuser: bool = False
     is_verified: bool = False
 
     def to_dict(self):
         return {
-            'id': str(self.id),
-            'email': str(self.email),
-            'nickname': str(self.nickname),
-            'is_active': str(self.is_active),
-            'is_superuser': str(self.is_superuser),
-            'is_verified': str(self.is_verified),
+            "id": str(self.id),
+            "email": str(self.email),
+            "nickname": str(self.nickname),
+            "is_active": str(self.is_active),
+            "registered_at": str(self.registered_at),
+            "is_superuser": str(self.is_superuser),
+            "is_verified": str(self.is_verified),
         }
 
     class Config:

@@ -1,5 +1,5 @@
 from fastapi_users.db import SQLAlchemyBaseUserTable
-from sqlalchemy import Column, String, Boolean, BigInteger, func, DateTime
+from sqlalchemy import BigInteger, Boolean, Column, DateTime, String, func
 
 from app.db.base import Base
 

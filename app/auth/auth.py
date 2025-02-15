@@ -1,5 +1,4 @@
-from fastapi_users.authentication import CookieTransport, AuthenticationBackend
-from fastapi_users.authentication import JWTStrategy
+from fastapi_users.authentication import AuthenticationBackend, CookieTransport, JWTStrategy
 
 
 def get_jwt_strategy(secret_key: str) -> JWTStrategy:

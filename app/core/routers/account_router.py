@@ -1,18 +1,20 @@
 from typing import List
-from sqlalchemy.ext.asyncio import async_sessionmaker, AsyncSession
+
 from fastapi import APIRouter, Depends
 from fastapi_users import FastAPIUsers
-from app.schemas.note import NoteCreate, NoteRead
-from app.schemas.user import UserRead
+from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
+
+from app.db.cache_storage.cache_repo import CacheRepo
 from app.db.repositories.note import NoteRepo
 from app.db.repositories.user import UserRepo
-from app.db.cache_storage.cache_repo import CacheRepo
+from app.schemas.note import NoteCreate, NoteRead
+from app.schemas.user import UserRead
 
 
 async def get_account_router(
-        users: FastAPIUsers,
-        async_session_maker: async_sessionmaker[AsyncSession],
-        cache_pool: CacheRepo,
+    users: FastAPIUsers,
+    async_session_maker: async_sessionmaker[AsyncSession],
+    cache_pool: CacheRepo,
 ) -> APIRouter:
     """Generate a router with an account route"""
 
@@ -24,8 +26,8 @@ async def get_account_router(
 
         @router.post("/account/note_create", status_code=201)
         async def note_create(
-                note_to_create: NoteCreate,
-                user: UserRead = Depends(users.current_user(active=True)),
+            note_to_create: NoteCreate,
+            user: UserRead = Depends(users.current_user(active=True)),
         ):
             """Set a new note to cache and database"""
             note = await note_repo.add_note(note_to_create, user.id)
@@ -39,7 +41,7 @@ async def get_account_router(
 
         @router.get("/account/notes_get")
         async def notes_get(
-                user: UserRead = Depends(users.current_user(active=True)),
+            user: UserRead = Depends(users.current_user(active=True)),
         ) -> List[NoteRead]:
             """Retrieve notes from cache or database if the cache is empty"""
             cached_notes = await cache_pool.get_cached_user_notes(user.id)
@@ -51,7 +53,9 @@ async def get_account_router(
             return notes
 
         @router.get("/account/user_info")
-        async def get_user_info(user: UserRead = Depends(users.current_user(active=True))) -> UserRead:
+        async def get_user_info(
+            user: UserRead = Depends(users.current_user(active=True)),
+        ) -> UserRead:
             """Retrieve user info from cache or database if cache is empty"""
             cached_user_info = await cache_pool.get_cached_user_info(user.id)
             if cached_user_info:
