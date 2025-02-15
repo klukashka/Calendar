@@ -12,7 +12,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi_users import FastAPIUsers
 from redis.asyncio import Redis
 
-from app.auth.auth import auth_backend
+from app.auth.auth import create_auth_backend
 from app.auth.manager import providing_user_manager
 from app.config import conf
 from app.core.routers_includer import include_routers
@@ -50,7 +50,7 @@ async def main() -> None:
 
     users = FastAPIUsers[User, int](
         await providing_user_manager(session_pool, conf.SECRET_KEY),
-        [auth_backend],
+        [create_auth_backend(conf.SECRET_KEY)],
     )
 
     # ----------- Redis -----------------
